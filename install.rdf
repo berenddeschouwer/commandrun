@@ -7,7 +7,6 @@
     <em:version>0.2.0</em:version>
     <em:creator>Achim Abeling</em:creator>
     <em:optionsURL>chrome://commandrun/content/options.xul</em:optionsURL>
-    <em:updateURL>http://code.banapple.de/firefox/commandrun.rdf</em:updateURL>
     <em:description>Allows to run commands of the operating system</em:description>
     <em:targetApplication>
       <Description>
