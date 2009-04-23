@@ -5,6 +5,8 @@
       checkCommandRun = function() {
         if (CommandRun) {
           var data = "The variable 'CommandRun' is defined.";
+          errorPar = document.getElementById("error");
+          errorPar.setAttribute("style","display:none");
         } else {
           var data = "The variable 'CommandRun' is NOT defined.";
           testPar = document.getElementById("test");
@@ -35,6 +37,13 @@
         <input id="command" type="text"/>
         <input type="submit" value="Submit"/>
       </form>
+    </p>
+    <p id="error">
+      The extension is not working for you since the variable
+      'CommandRun' should be defined but is not.<br/>
+      Please inform the developer about this bug at
+      <code>hacim_bengali (at) web (dot) de</code> providing your
+      operating system and firefox version.
     </p>
   </body>
 </html>
