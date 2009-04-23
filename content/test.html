@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Test page for the commandrun extension</title>
+    <script type="text/javascript">
+      checkCommandRun = function() {
+        if (CommandRun) {
+          var data = "The variable 'CommandRun' is defined.";
+        } else {
+          var data = "The variable 'CommandRun' is NOT defined.";
+          testPar = document.getElementById("test");
+          testPar.setAttribute("style","display:none");
+        }
+        var paragraph = document.getElementById("CommandRunAvailability");
+        paragraph.firstChild.data = data;
+      }
+      executeCommand = function() {
+        command = document.getElementById("command").value;
+        CommandRun.run(command,[]);  
+      }
+    </script>
+  </head>
+  <body onload="checkCommandRun()">
+    <h1>Test page for the commandrun extension</h1>
+    <p>
+      Congratulations! You obviously installed the
+      extension successfully.
+    </p>
+    <p id="CommandRunAvailability"/>
+    <p id="test">
+      Type in a command and give the extension a try.<br/>
+      Do not forget to define the command in the preferences under
+      <code>extensions.commandrun.allowedcommands</code>.<br/>
+      At the moment only commands without arguments can be tested, sorry.<br/>
+      <form action="javascript:executeCommand()">
+        <input id="command" type="text"/>
+        <input type="submit" value="Submit"/>
+      </form>
+    </p>
+  </body>
+</html>
