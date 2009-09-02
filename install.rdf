@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>commandrun@banapple.de</em:id>
     <em:name>commandrun</em:name>
-    <em:version>0.5.0</em:version>
+    <em:version>0.5.1</em:version>
     <em:creator>Achim Abeling</em:creator>
     <em:optionsURL>chrome://commandrun/content/options.xul</em:optionsURL>
     <em:description>Allows to run commands of the operating system</em:description>
