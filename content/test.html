@@ -17,7 +17,9 @@
       }
       executeCommand = function() {
         command = document.getElementById("command").value;
-        CommandRun.run(command,[]);  
+        var result = CommandRun.run(command,[]);
+        var exitCodeDiv = document.getElementById("exitcode");
+        exitCodeDiv.innerHTML = result;  
       }
     </script>
   </head>
@@ -40,7 +42,8 @@
       <form action="javascript:executeCommand()">
         <input id="command" type="text"/>
         <input type="submit" value="Submit"/>
-      </form>
+      </form><br/>
+      ExitCode: <div id="exitcode"/>
     </p>
     <p id="error">
       The extension is not working for you since the variable
