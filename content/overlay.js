@@ -32,7 +32,7 @@ function CommandRunHandler() {
     	alert("command not found: "+command);
     	return 1;
     }
-    var blocking = false;
+    var blocking = true;
     var process = Components.classes["@mozilla.org/process/util;1"].
                       createInstance(Components.interfaces.nsIProcess);
     try {
@@ -42,8 +42,10 @@ function CommandRunHandler() {
     	return 1;
     }
 
-    var ec = process.run(blocking, args, args.length);
-    return ec;
+    process.run(blocking, args, args.length);
+    
+    result = process.exitValue;
+    return result;
   },
   this.isCommandAllowed = function(command,page) {
     /* get the root preferences branch */
