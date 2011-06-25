@@ -45,6 +45,7 @@ function CommandRunHandler() {
     process.run(blocking, args, args.length);
     
     result = process.exitValue;
+
     return result;
   },
   this.isCommandAllowed = function(command,page) {
@@ -64,7 +65,7 @@ function CommandRunHandler() {
 	    
     /* evaluate the json text */
     if (allowedCommandsPref) {
-    	var allowedCommands = eval(allowedCommandsPref);
+    	var allowedCommands = JSON.parse(allowedCommandsPref);
     	if (this.contains(command,allowedCommands)) return true;
     }
     
@@ -79,15 +80,14 @@ function CommandRunHandler() {
 	}
 	
 	if (allowedCommandsPerHostPref) {
-		var obj = eval('('+allowedCommandsPerHostPref+')');
+		var obj = JSON.parse(allowedCommandsPerHostPref);
 		/* keys of the object are prefixes for pages,
 		   values are lists of commands */
 		try {
 			for (prefix in obj) {
 				if (this.isPrefix(page,prefix)) {
 					/* get allowed commands for this prefix */
-					var allowedCommands = 
-						eval(obj[prefix]);
+					var allowedCommands = obj[prefix];
     				if (this.contains(command,allowedCommands)) {
     					return true;
     				}
