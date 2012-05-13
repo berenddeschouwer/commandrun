@@ -11,6 +11,7 @@ var CommandRun = {
     var win = event.originalTarget.defaultView.wrappedJSObject;
     win.CommandRun = new CommandRunHandler();
 	win.CommandRun.page = win.document.location.href;
+	Object.freeze(win.CommandRun);
   }
 };
 window.addEventListener("load", function(e) { CommandRun.onLoad(e); }, false);
