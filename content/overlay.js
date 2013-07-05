@@ -1,23 +1,33 @@
-var CommandRun = {
+var CommandRunInit = {
   onLoad: function() {
     // initialization code
     this.initialized = true;
     var appcontent = document.getElementById("appcontent");
     if (appcontent) {
-      appcontent.addEventListener("DOMContentLoaded", CommandRun.onPageLoad, true);
+      appcontent.addEventListener("DOMContentLoaded", CommandRunInit.onPageLoad, true);
     }
   },
   onPageLoad: function(event) {
     var win = event.originalTarget.defaultView.wrappedJSObject;
     win.CommandRun = new CommandRunHandler();
-	win.CommandRun.page = win.document.location.href;
-	Object.freeze(win.CommandRun);
+    win.CommandRun.page = win.document.location.href;
+    Object.freeze(win.CommandRun);
   }
 };
-window.addEventListener("load", function(e) { CommandRun.onLoad(e); }, false);
+window.addEventListener("load", function(e) { CommandRunInit.onLoad(e); }, false);
 
-function CommandRunHandler() {
-  this.run = function(command,args) {
+var CommandRunHandler = function() { 
+  
+	/* see https://blog.mozilla.org/addons/2012/08/20/exposing-objects-to-content-safely/ */
+	this.__exposedProps__ = { 
+			"run" : "r"};
+};
+
+CommandRunHandler.prototype = {
+
+  page : null,
+
+  run : function(command,args) {
     /* check whether command is allowed */
     if (!this.isCommandAllowed(command,this.page)) {
       var alertText = "Command '"+command+"'\n"
@@ -49,7 +59,8 @@ function CommandRunHandler() {
 
     return result;
   },
-  this.isCommandAllowed = function(command,page) {
+
+  isCommandAllowed : function(command,page) {
     /* get the root preferences branch */
     var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                     .getService(Components.interfaces.nsIPrefBranch);
@@ -103,7 +114,8 @@ function CommandRunHandler() {
 	
     return false;
   },
-  this.contains = function(element,array) {
+
+  contains : function(element,array) {
     var i;
     for (i=0; i<array.length; i++) {
       if (array[i] === element) {
@@ -112,11 +124,12 @@ function CommandRunHandler() {
     }
     return false;
   },
+
   /**
    * Checks whether the given prefix is a prefix of the
    * given string.
    */
-  this.isPrefix = function(string,prefix) {
+  isPrefix : function(string,prefix) {
   	return (prefix === string.substring(0,prefix.length)); 	
   }
 }
