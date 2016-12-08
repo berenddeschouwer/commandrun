@@ -9,7 +9,8 @@ var CommandRunInit = {
   },
   onPageLoad: function(event) {
     var win = event.originalTarget.defaultView.wrappedJSObject;
-    win.CommandRun = new CommandRunHandler();
+    //win.CommandRun = new CommandRunHandler();
+    win.CommandRun = Components.utils.cloneInto(new CommandRunHandler(),win,{cloneFunctions: true});
     win.CommandRun.page = win.document.location.href;
     Object.freeze(win.CommandRun);
   }
@@ -21,15 +22,13 @@ var CommandRunHandler = function() {
 	/* see https://blog.mozilla.org/addons/2012/08/20/exposing-objects-to-content-safely/ */
 	this.__exposedProps__ = { 
 			"run" : "r"};
-};
 
-CommandRunHandler.prototype = {
 
-  page : null,
+  this.page = null;
 
-  run : function(command,args) {
+  this.run = function(command,args) {
     /* check whether command is allowed */
-    if (!this.isCommandAllowed(command,this.page)) {
+    if (!Components.utils.waiveXrays(this).isCommandAllowed(command,this.page)) {
       var alertText = "Command '"+command+"'\n"
       	+"is not allowed for page "+this.page+".";
       alert(alertText);
@@ -58,9 +57,9 @@ CommandRunHandler.prototype = {
     result = process.exitValue;
 
     return result;
-  },
+  };
 
-  isCommandAllowed : function(command,page) {
+  this.isCommandAllowed = function(command,page) {
     /* get the root preferences branch */
     var prefs = Components.classes["@mozilla.org/preferences-service;1"]
                     .getService(Components.interfaces.nsIPrefBranch);
@@ -77,8 +76,8 @@ CommandRunHandler.prototype = {
 	    
     /* evaluate the json text */
     if (allowedCommandsPref) {
-    	var allowedCommands = JSON.parse(allowedCommandsPref);
-    	if (this.contains(command,allowedCommands)) return true;
+	var allowedCommands = JSON.parse(allowedCommandsPref);
+	if (Components.utils.waiveXrays(this).contains(command,allowedCommands)) return true;
     }
     
     /* continue with allowed commands per host preference */
@@ -97,10 +96,10 @@ CommandRunHandler.prototype = {
 		   values are lists of commands */
 		try {
 			for (prefix in obj) {
-				if (this.isPrefix(page,prefix)) {
+				if (Components.utils.waiveXrays(this).isPrefix(page,prefix)) {
 					/* get allowed commands for this prefix */
 					var allowedCommands = obj[prefix];
-    				if (this.contains(command,allowedCommands)) {
+				if (Components.utils.waiveXrays(this).contains(command,allowedCommands)) {
     					return true;
     				}
 				}		
@@ -113,9 +112,9 @@ CommandRunHandler.prototype = {
 	}
 	
     return false;
-  },
+  };
 
-  contains : function(element,array) {
+  this.contains = function(element,array) {
     var i;
     for (i=0; i<array.length; i++) {
       if (array[i] === element) {
@@ -123,13 +122,13 @@ CommandRunHandler.prototype = {
       }
     }
     return false;
-  },
+  };
 
   /**
    * Checks whether the given prefix is a prefix of the
    * given string.
    */
-  isPrefix : function(string,prefix) {
+  this.isPrefix = function(string,prefix) {
   	return (prefix === string.substring(0,prefix.length)); 	
   }
 }
