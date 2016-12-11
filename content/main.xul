@@ -3,7 +3,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://commandrun/locale/commandrun.dtd">
 <overlay id="commandrun-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="overlay.js"/>
+  <script type="text/javascript" src="chrome.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="commandrun-strings" src="chrome://commandrun/locale/commandrun.properties"/>
   </stringbundleset>

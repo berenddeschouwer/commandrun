@@ -1,12 +1,10 @@
+/*
+ *  Multiprocess Firefox requires splitting scripts that run in the browser
+ *  chrome from the document frame.
+ *
+ *  This script is the document frame script.
+ */
 var CommandRunInit = {
-  onLoad: function() {
-    // initialization code
-    this.initialized = true;
-    var appcontent = document.getElementById("appcontent");
-    if (appcontent) {
-      appcontent.addEventListener("DOMContentLoaded", CommandRunInit.onPageLoad, true);
-    }
-  },
   onPageLoad: function(event) {
     var win = event.originalTarget.defaultView.wrappedJSObject;
     //win.CommandRun = new CommandRunHandler();
@@ -15,7 +13,10 @@ var CommandRunInit = {
     Object.freeze(win.CommandRun);
   }
 };
-window.addEventListener("load", function(e) { CommandRunInit.onLoad(e); }, false);
+addEventListener("DOMContentLoaded", function(event) {
+    CommandRunInit.onPageLoad(event);
+});
+
 
 var CommandRunHandler = function() { 
   
@@ -29,9 +30,9 @@ var CommandRunHandler = function() {
   this.run = function(command,args) {
     /* check whether command is allowed */
     if (!Components.utils.waiveXrays(this).isCommandAllowed(command,this.page)) {
-      var alertText = "Command '"+command+"'\n"
-      	+"is not allowed for page "+this.page+".";
-      alert(alertText);
+      var alertText = "CommandRun: Blocked '" + this.page +
+                      "' from running '" + command + "'";
+      sendAsyncMessage("commandrun-alert", {alertText: alertText});
       return 1;
     }
     var file = Components.classes["@mozilla.org/file/local;1"].
@@ -39,7 +40,8 @@ var CommandRunHandler = function() {
     try {
     	file.initWithPath(command);
     } catch (e) {
-    	alert("command not found: "+command);
+        var alertText = "CommandRun: command not found: '" + command + "'";
+        sendAsyncMessage("commandrun-alert", {alertText: alertText});
     	return 1;
     }
     var blocking = true;
@@ -48,8 +50,9 @@ var CommandRunHandler = function() {
     try {
     	process.init(file);
     } catch (e) {
-    	alert("command not found: "+command);
-    	return 1;
+        var alertText = "CommandRun: command not found: '" + command + "'";
+        sendAsyncMessage("commandrun-alert", {alertText: alertText});
+        return 1;
     }
 
     process.run(blocking, args, args.length);
@@ -105,9 +108,8 @@ var CommandRunHandler = function() {
 				}		
 			}
 		} catch (e) {
-			alert(
-				"failed to parse extensions.commandrun.allowedcommandsperhost: "
-				+e);
+                        var alertText = "CommandRun: Failed to parse extensions.commandrun.allowedcommandsperhost: " + e;
+                        sendAsyncMessage("commandrun-alert", {alertText: alertText});
 		}
 	}
 	

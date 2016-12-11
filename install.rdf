@@ -4,16 +4,20 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>commandrun@banapple.de</em:id>
     <em:name>commandrun</em:name>
-    <em:version>0.13.0</em:version>
+    <em:version>0.14.0</em:version>
     <em:creator>Achim Abeling</em:creator>
+    <em:developer>Berend De Schouwer</em:developer>
+    <em:contributor>Jaume Bellet</em:contrinbutor>
     <em:optionsURL>chrome://commandrun/content/options.xul</em:optionsURL>
     <em:description>Allows to run commands of the operating system</em:description>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->
         <em:minVersion>28.0</em:minVersion>
-        <em:maxVersion>45.*</em:maxVersion>
+        <em:maxVersion>50.*</em:maxVersion>
       </Description>
     </em:targetApplication>
+    <em:multiprocessCompatible>true</em:multiprocessCompatible>
+    <em:type>2</em:type>
   </Description>
 </RDF>
