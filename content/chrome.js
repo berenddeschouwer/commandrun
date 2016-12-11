@@ -7,7 +7,7 @@
 
 var globalMM = Cc["@mozilla.org/globalmessagemanager;1"]
   .getService(Ci.nsIMessageListenerManager);
-globalMM.loadFrameScript("chrome://commandrun/content/commandrun.js", true);
+globalMM.loadFrameScript("chrome://commandrun/content/frame.js", true);
 
 globalMM.addMessageListener("commandrun-alert", function(msg) {
     dump("we got a message");
