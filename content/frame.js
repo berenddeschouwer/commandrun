@@ -133,4 +133,39 @@ var CommandRunHandler = function() {
   this.isPrefix = function(string,prefix) {
   	return (prefix === string.substring(0,prefix.length)); 	
   }
+
+  /**
+   * Reads a file from a directory and returns its contents.
+   * Useful for reading command output.
+   *
+   * The variable dir should have one of the values listed here:
+   * https://developer.mozilla.org/en-US/Add-ons/Code_snippets/File_I_O
+   * e.g. "Home" or "TmpD".
+   *
+   * WARNING: Do not use on very large files, as your browser may freeze.
+   */
+  this.readFile = function (dir, filename, encoding = "UTF-8") {
+  	Components.utils.import("resource://gre/modules/FileUtils.jsm");
+
+  	var file = FileUtils.getFile(dir, [filename]);
+  	var data = "";
+
+  	var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].
+  	  createInstance(Components.interfaces.nsIFileInputStream);
+  	var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].
+  	  createInstance(Components.interfaces.nsIConverterInputStream);
+  	fstream.init(file, -1, 0, 0);
+  	cstream.init(fstream, encoding, 0, 0);
+
+  	let str = {};
+  	let read = 0;
+  	do { 
+  	  read = cstream.readString(0xffffffff, str);
+  	  data += str.value;
+  	} while (read != 0);
+
+  	cstream.close();
+
+  	return data;
+  }
 }
