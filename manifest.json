@@ -1,21 +1,26 @@
 {
   "manifest_version": 2,
-  "name": "CommandRun",
+  "name": "commandrun",
   "version": "1.0",
   "description": "Adds a red border to all webpages matching mozilla.org.",
   "applications": {
     "gecko": {
-      "id": "commandrun@deschouwer.co.za"
+      "id": "commandrun@deschouwer.co.za",
+      "strict_min_version": "56.0"
     }
   },
+  "permissions": ["nativeMessaging"],
   "icons": {
     "48": "icons/commandrun-48.png",
     "96": "icons/commandrun-96.png"
   },
+  "background": {
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["commandrun.js"]
+      "matches": ["*://localhost/*"],
+      "js": ["content.js"]
     }
   ]
 }
