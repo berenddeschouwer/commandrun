@@ -9,7 +9,10 @@
       "strict_min_version": "56.0"
     }
   },
-  "permissions": ["nativeMessaging", "storage"],
+  "permissions": [
+    "nativeMessaging",
+    "storage"
+  ],
   "icons": {
     "48": "icons/commandrun-48.png",
     "96": "icons/commandrun-96.png"
