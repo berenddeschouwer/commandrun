@@ -13,7 +13,6 @@ import time
 import subprocess
 import base64
 
-
 # Read a message from stdin and decode it.
 def get_message():
     raw_length = sys.stdin.buffer.read(4)

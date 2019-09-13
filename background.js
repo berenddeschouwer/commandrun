@@ -3,17 +3,29 @@
 /*
 On startup, connect to the "ping_pong" app.
 */
-var runner = browser.runtime.connectNative("commandrun");
-console.log("opened commandrun runner");
+var runner;
+var control;
 
-/*
-Listen for messages from the app.
-*/
-runner.onMessage.addListener((response) => {
-    console.log("Received: " + response);
-    control.sendResponse(response);
-    console.log("processed: " + response);
-});
+function startRunner() {
+    runner = browser.runtime.connectNative("commandrun");
+    console.log("opened commandrun runner");
+
+    runner.onDisconnect.addListener((p) => {
+        console.log("disconnected");
+        setTimeout(startRunner, 60 * 1000);
+    });
+
+    /*
+    Listen for messages from the app.
+    */
+    runner.onMessage.addListener((response) => {
+        console.log("Received: " + response);
+        control.sendResponse(response);
+        console.log("processed: " + response);
+    });
+}
+
+startRunner();
 
 /*
 On a click on the browser action, send the app a message.
@@ -147,7 +159,7 @@ Controller.prototype.prepare = function(pid) {
     getting.then(processor, onError); 
 }
 
-var control = new Controller();
+control = new Controller();
 
 function allowedCommand(cmd) {
     var allowed_commands;
