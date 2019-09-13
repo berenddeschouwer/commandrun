@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "commandrun",
   "version": "1.0",
-  "description": "Adds a red border to all webpages matching mozilla.org.",
+  "description": "Allows running native commands.",
   "applications": {
     "gecko": {
       "id": "commandrun@deschouwer.co.za",
