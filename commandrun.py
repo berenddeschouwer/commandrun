@@ -9,7 +9,6 @@ import sys
 import struct
 import syslog
 import os
-import time
 import subprocess
 import base64
 
@@ -87,7 +86,6 @@ while True:
             sys.stderr.write("child\n")
             sys.stderr.flush()
             myhandle = handle
-            #time.sleep(1)
             stufftorun = message["what"]
             sys.stderr.write("stufftorun: %s\n" % str(stufftorun))
             sys.stderr.flush()
