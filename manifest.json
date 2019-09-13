@@ -9,17 +9,20 @@
       "strict_min_version": "56.0"
     }
   },
-  "permissions": ["nativeMessaging"],
+  "permissions": ["nativeMessaging", "storage"],
   "icons": {
     "48": "icons/commandrun-48.png",
     "96": "icons/commandrun-96.png"
+  },
+  "options_ui": {
+    "page": "options.html"
   },
   "background": {
     "scripts": ["background.js"]
   },
   "content_scripts": [
     {
-      "matches": ["*://localhost/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ]

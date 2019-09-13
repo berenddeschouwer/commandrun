@@ -24,6 +24,8 @@ browser.runtime.onInstalled.addListener(function(stuff){
 
 var Controller = function() {
     this.pids = {};
+    this.commands = {};
+    this.urls = {};
     return this;
 }
 
@@ -38,6 +40,18 @@ Controller.prototype.setResponder = function(pid, responder) {
     console.log("Controller.setResponder(): done");
 }
 
+Controller.prototype.setCommand = function(pid, command) {
+    console.log("Controller.setCommand()");
+    this.commands[pid] = command;
+    console.log("Controller.setCommand(): done");
+}
+
+Controller.prototype.setURL = function(pid, url) {
+    console.log("Controller.setURL()");
+    this.urls[pid] = url;
+    console.log("Controller.setURL(): done");
+}
+
 Controller.prototype.sendResponse = function(response) {
     var pid = response.handle;
     var responder = this.pids[pid];
@@ -47,11 +61,118 @@ Controller.prototype.sendResponse = function(response) {
     console.log("responded");
 }
 
+Controller.prototype.prepare = function(pid) {
+    //var msg = {action:"run", what:message, handle:pid};
+    //runner.postMessage(msg);
+    console.log("Controller.prepare():", pid);
+    function onError(error) {
+        console.log(`Error: ${error}`);
+    }
+    function permitted(url, list) {
+        console.log("permitted(): start");
+        var u = new URL(url);
+        var found = false;
+        console.log("permitted(): hostname=", u.hostname);
+        list.forEach(function(element) {
+            console.log("permitted(): matching=", element);
+            if (element[0] == "*") {
+                element = element.substring(element.length - 1);
+                console.log("permitted(): matching chopped=", element);
+            }
+            if (u.hostname.length < element.length) {
+                console.log("permitted(): too short");
+                return; 
+            }
+            if (u.hostname == element) {
+                console.log("permitted(): exact match");
+                found = true;
+                return;
+            }
+            if (element[0] == ".") {
+                var end = u.hostname.substring(u.hostname.length - element.length);
+                console.log("permitted(): considering=", end);
+                if (element == end) {
+                    console.log("permitted(): domain match");
+                    found = true;
+                    return;
+                }
+            }
+        });
+        return found;
+    }
+    function checkAndRun(that, pid) {
+        console.log("checkAndRun(): starting with pid=", pid);
+        console.log("checkAndRun(): this=", that);
+        var message = that.commands[pid];
+        console.log("checkAndRun(): message=", message);
+        var cmd = message[0];
+        var responder = that.pids[pid];
+        var url = that.urls[pid];
+        console.log("checkAndRun(): stopping");
+        return function(result) {
+            var allowed_commands;
+            var permitted_sites;
+            var command = cmd;
+            if (result.allowed_commands) {
+                console.log("background/saved commands:", result.allowed_commands);
+                allowed_commands = result.allowed_commands;
+            } else {
+                console.log("background/no allowed commands set");
+                allowed_commands = ["/usr/bin/ls"];
+            }
+            if (result.permitted_sites) {
+                console.log("background/permitted sites:", result.permitted_sites);
+                permitted_sites = result.permitted_sites;
+            } else {
+                console.log("background/no permitted set");
+                permitted_sites = ["localhost"];
+            }
+            if (allowed_commands.includes(cmd) &&
+                permitted(url, permitted_sites)) {
+                 console.log("allowed command, forwarding");
+                 var msg = {action:"run", what:message, handle:pid};
+                 runner.postMessage(msg);
+            } else {
+                 console.log("forbidden command");
+                 var response = {handle: pid, errno: -1, stdout: "", stderr: "forbidden command"};
+                 responder(response);
+            }
+        }
+    }
+    console.log("Controller.prepare(): syncing storage");
+    var processor = checkAndRun(this,pid);
+    console.log("Controller.prepare():", processor);
+    var getting = browser.storage.sync.get(["allowed_commands", "permitted_sites"]);
+    console.log("Controller.prepare(): chainging promise");
+    getting.then(processor, onError); 
+}
+
 var control = new Controller();
+
+function allowedCommand(cmd) {
+    var allowed_commands;
+
+    function getCommands(result) {
+        if (result.allowed_commands) {
+            console.log("background/saved commands:", result.allowed_commands);
+            allowed_commands = result.allowed_commands.join(" ");
+        } else {
+            console.log("background/no allowed commands set");
+            allowed_commands = "/usr/bin/ls";
+        }
+    }
+
+    var getting = browser.storage.sync.get("allowed_commands");
+    getting.then(getCommands, onError); 
+    console.log("allowed_commands:", allowed_commands);
+    return allowed_commands.includes(cmd);
+}
 
 function handleMessage(message, sender, sendResponse) {
     console.log("received message");
     console.log("received: ", message);
+    var command = message[0];
+    console.log("command:", command);
     console.log("from: ", sender);
     console.log("respond on: ", sendResponse);
     //response = {errno: 0, stdout: "pong", stderr: ""};
@@ -66,10 +187,11 @@ function handleMessage(message, sender, sendResponse) {
         console.log("responder wrapper done");
     }
     control.setResponder(pid, sendResponse);
+    control.setCommand(pid, message);
+    control.setURL(pid, sender.url);
     console.log("set responder");
-    var msg = {action:"run", what:message, handle:pid};
     console.log("sending message");
-    runner.postMessage(msg);
+    control.prepare(pid);
     console.log("sent message");
     return true;
 };
