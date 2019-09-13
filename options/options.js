@@ -20,7 +20,7 @@ function restoreOptions() {
         var allowed_commands;
         if (result.allowed_commands) {
             console.log("saved commands:", result.allowed_commands);
-            allowed_commands = result.allowed_commands.join(" ");
+            allowed_commands = result.allowed_commands.join(", ");
         } else {
             allowed_commands = "/usr/bin/ls";
         }

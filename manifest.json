@@ -18,7 +18,7 @@
         "96": "icons/commandrun-96.png"
     },
     "options_ui": {
-        "page": "options.html"
+        "page": "options/options.html"
     },
     "background": {
         "scripts": ["background.js"]
