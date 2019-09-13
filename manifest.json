@@ -1,32 +1,32 @@
 {
-  "manifest_version": 2,
-  "name": "commandrun",
-  "version": "1.0",
-  "description": "Allows running native commands.",
-  "applications": {
-    "gecko": {
-      "id": "commandrun@deschouwer.co.za",
-      "strict_min_version": "56.0"
-    }
-  },
-  "permissions": [
-    "nativeMessaging",
-    "storage"
-  ],
-  "icons": {
-    "48": "icons/commandrun-48.png",
-    "96": "icons/commandrun-96.png"
-  },
-  "options_ui": {
-    "page": "options.html"
-  },
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ]
+    "manifest_version": 2,
+    "name": "commandrun",
+    "version": "1.0",
+    "description": "Allows running native commands.",
+    "applications": {
+        "gecko": {
+            "id": "commandrun@deschouwer.co.za",
+            "strict_min_version": "56.0"
+        }
+    },
+    "permissions": [
+        "nativeMessaging",
+        "storage"
+    ],
+    "icons": {
+        "48": "icons/commandrun-48.png",
+        "96": "icons/commandrun-96.png"
+    },
+    "options_ui": {
+        "page": "options.html"
+    },
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
+        }
+    ]
 }
