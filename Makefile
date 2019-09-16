@@ -17,7 +17,9 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	    $(PY_RUN) $(EXT_RUN)
 
 %.py: %.in.py
-	cp $< $@
+	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
+	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	    $< > $@
 
 %.js: %.in.js
-	cp $< $@
+	sed -e "s/abracadabra//g" $< > $@

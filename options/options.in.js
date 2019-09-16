@@ -22,7 +22,7 @@ function restoreOptions() {
             console.log("saved commands:", result.allowed_commands);
             allowed_commands = result.allowed_commands.join(", ");
         } else {
-            allowed_commands = "/usr/bin/false, /usr/bin/true";
+            allowed_commands = "__ALLOWED_COMMANDS__";
         }
         document.querySelector("#allowed_commands").value = allowed_commands;
     }
@@ -33,7 +33,7 @@ function restoreOptions() {
             console.log("permitted sites:", result.permitted_sites);
             permitted_sites = result.permitted_sites.join(", ");
         } else {
-            permitted_sites = "localhost, server";
+            permitted_sites = "__PERMITTED_SITES__";
         }
         document.querySelector("#permitted_sites").value = permitted_sites;
     }
