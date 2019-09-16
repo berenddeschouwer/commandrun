@@ -1,14 +1,45 @@
 "use strict";
 
+/*
+ *  Simple Example
+ *
+ *  This example will run '/usr/bin/ls /', and print the output.
+ *  The API for CommandRun is deliberately simple:
+ *  CommandRun.run( command, run-when-done )
+ */
+
+
+/*
+ *  printOutput
+ *
+ *  @errno  - int - an error number.
+ *                  0  means success.
+ *                  <0 means API error (eg. forbidden command)
+ *                  >0 is the error of the command.
+ *  @stdout - str - the output of the command.
+ *  @stderr - str - the error output of the command.
+ *
+ *  stdout and stderr are strings that contain the output.  Newlines
+ *  are not preserved in Javascript.
+ *
+ *  output >4GB isn't supported.  Large-ish output is supported by
+ *  browsers but impractical.
+ */
 var printOutput = function(errno, stdout, stderr) {
     var elem = document.getElementById("output");
-    if (errno == 0) {
+    if (errno == 0 /* no error */) {
         elem.textContent = stdout;
-    } else {
+    } else /* error */ {
         elem.textContent = stderr;
     }
 };
 
+
+/*
+ *  getListing (run on button press event)
+ *
+ *  Runs a command, runs 'printOutput' when the results are known.
+ */
 var getListing = function() {
     var handler = CommandRun.run(["/usr/bin/ls", "/"], printOutput);
 };
