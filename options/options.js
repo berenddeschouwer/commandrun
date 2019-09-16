@@ -22,7 +22,7 @@ function restoreOptions() {
             console.log("saved commands:", result.allowed_commands);
             allowed_commands = result.allowed_commands.join(", ");
         } else {
-            allowed_commands = "/usr/bin/ls";
+            allowed_commands = "/usr/bin/false, /usr/bin/true";
         }
         document.querySelector("#allowed_commands").value = allowed_commands;
     }
