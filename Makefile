@@ -1,9 +1,11 @@
 ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
 
-EXT_RUN := background/background.js content/content.js \
-           options/options.html options/options.js
-PY_RUN := commandrun.py
+EXT_SOURCE := background/background.in.js options/options.in.js
+EXT_RUN := $(patsubst %.in.js,%.js,$(EXT_SOURCE)) \
+           options/options.html content/content.js
+PY_SOURCE := commandrun.in.py
+PY_RUN := $(patsubst %.in.py,%.py,$(PY_SOURCE))
 
 DOC_FILES := LICENSE README.md
 META_FILES := manifest.json native-messaging-hosts/commandrun.json
