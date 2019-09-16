@@ -35,6 +35,7 @@ var CommandRun = {
     }
 }
 
-window.wrappedJSObject.CommandRun = cloneInto(CommandRun, window,
-                                              {cloneFunctions: true});
-
+if (!window.wrappedJSObject.CommandRun) {
+    window.wrappedJSObject.CommandRun = cloneInto(CommandRun, window,
+                                                  {cloneFunctions: true});
+}
