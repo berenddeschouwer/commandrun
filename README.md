@@ -1,7 +1,9 @@
-commandrun is a firefox extension which allows to execute 
-system commands from javascript.
+CommandRun is a browser extension to allow executing native commands.
 
-For details please see the wiki pages.
+CommandRun is typically used in Kiosk environments where it's desired
+to run a restricted set of commands from a locked-down browser.  These
+commands may include reboot, or start a flash drive.
 
-links:
-* https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIProcess
+The list of websites and commands are configurable.
+
+For more information, go to https://github.com/berenddeschouwer/commandrun
