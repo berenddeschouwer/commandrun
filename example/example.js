@@ -11,13 +11,14 @@
 
 /*
  *  printOutput
+ *  @function
  *
- *  @errno  - int - an error number.
- *                  0  means success.
- *                  <0 means API error (eg. forbidden command)
- *                  >0 is the error of the command.
- *  @stdout - str - the output of the command.
- *  @stderr - str - the error output of the command.
+ *  @param {integer} errno - an error number.
+ *                           0  means success.
+ *                           <0 means API error (eg. forbidden command)
+ *                           >0 is the error of the command.
+ *  @param {string} stdout - the output of the command.
+ *  @param {string} stderr - the error output of the command.
  *
  *  stdout and stderr are strings that contain the output.  Newlines
  *  are not preserved in Javascript.
@@ -37,9 +38,10 @@ var printOutput = function(errno, stdout, stderr) {
 
 /*
  *  getListing (run on button press event)
+ *  @function
  *
  *  Runs a command, runs 'printOutput' when the results are known.
  */
 var getListing = function() {
-    var handler = CommandRun.run(["/usr/bin/ls", "/"], printOutput);
+    CommandRun.run(["/usr/bin/ls", "/"], printOutput);
 };
