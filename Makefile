@@ -1,5 +1,7 @@
-prefix = /usr/local
-libexecdir = $(prefix)/libexec
+PREFIX := /usr/local
+LIBEXECDIR := $(PREFIX)/libexec
+LIBDIR := $(PREFIX)/lib
+NATIVE_MANIFEST_DIR := $(LIBDIR)/mozilla/native-messaging-hosts/
 
 ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
@@ -32,5 +34,12 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	    $< > $@
 
 %.json: %.in.json
-	sed -e "s|@libexecdir@|$(libexecdir)|g" \
+	sed -e "s|@LIBEXECDIR@|$(LIBEXECDIR)|g" \
 	    $< > $@
+
+install: all
+	install -d $(DESTDIR)$(LIBEXECDIR)/
+	install -m 755 commandrun.py $(DESTDIR)$(LIBEXECDIR)/
+	install -d $(DESTDIR)$(NATIVE_MANIFEST_DIR)/
+	install -m 644 native-messaging-hosts/commandrun.json \
+	        $(DESTDIR)$(NATIVE_MANIFEST_DIR)/commandrun.json
