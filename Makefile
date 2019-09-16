@@ -27,3 +27,8 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
 	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
 	    $< > $@
+
+%.json: %.in.json
+	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
+	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	    $< > $@
