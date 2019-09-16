@@ -6,9 +6,24 @@
   </head>
   <body>
     <form>
-        <label>Permitted sites<input type="text" id="permitted_sites" ></label>
-        <br>
-        <label>Allowed commands<input type="text" id="allowed_commands" ></label>
+        <p>
+        <bold>Permitted Sites</bold>
+        Which sites are permitted to run commands.  You can specify
+        specific hosts, eg. <em>localhost.localdomain,</em> or domains, eg.
+        <em>.example.com.</em>  A list of sites can be specified.
+        <p>
+        <input type="text" id="permitted_sites" >
+        <hr>
+        <p>
+        <bold>Allowed Commands</bold>
+        What commands are allowed to run.  A list of commands can be
+        specified.  <em>Important:</em> Sites will be able to add options
+        to the commands, so if you allow <em>/usr/bin/ls</em>, sites can
+        also run <em>/usr/bin/ls --help</em>.
+        <p>
+        <input type="text" id="allowed_commands" >
+        <hr>
+        <p>
         <button type="submit">Save</button>
     </form>
     <script src="options.js"></script>
