@@ -22,4 +22,6 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	    $< > $@
 
 %.js: %.in.js
-	sed -e "s/abracadabra//g" $< > $@
+	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
+	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	    $< > $@
