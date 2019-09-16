@@ -41,6 +41,9 @@ var printOutput = function(errno, stdout, stderr) {
  *  @function
  *
  *  Runs a command, runs 'printOutput' when the results are known.
+ *
+ *  The command is an [], with [0] being the command and subsequent
+ *  entries as parameters, conforming with execvp()
  */
 var getListing = function() {
     CommandRun.run(["/usr/bin/ls", "/"], printOutput);
