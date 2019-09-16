@@ -1,3 +1,6 @@
+prefix = /usr/local
+libexecdir = $(prefix)/libexec
+
 ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
 
@@ -19,16 +22,15 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	    $(PY_RUN) $(EXT_RUN)
 
 %.py: %.in.py
-	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
-	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
+	    -e "s|@PERMITTED_SITES@|$(PERMITTED_SITES)|g" \
 	    $< > $@
 
 %.js: %.in.js
-	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
-	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
+	    -e "s|@PERMITTED_SITES@|$(PERMITTED_SITES)|g" \
 	    $< > $@
 
 %.json: %.in.json
-	sed -e "s|__ALLOWED_COMMANDS__|$(ALLOWED_COMMANDS)|g" \
-	    -e "s|__PERMITTED_SITES__|$(PERMITTED_SITES)|g" \
+	sed -e "s|@libexecdir@|$(libexecdir)|g" \
 	    $< > $@

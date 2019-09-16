@@ -130,14 +130,14 @@ Controller.prototype.prepare = function(pid) {
                 allowed_commands = result.allowed_commands;
             } else {
                 console.log("background/no allowed commands set");
-                allowed_commands = ["__ALLOWED_COMMANDS__"];
+                allowed_commands = ["@ALLOWED_COMMANDS@"];
             }
             if (result.permitted_sites) {
                 console.log("background/permitted sites:", result.permitted_sites);
                 permitted_sites = result.permitted_sites;
             } else {
                 console.log("background/no permitted set");
-                permitted_sites = ["__PERMITTED_SITES__"];
+                permitted_sites = ["@PERMITTED_SITES@"];
             }
             if (allowed_commands.includes(cmd) &&
                 permitted(url, permitted_sites)) {

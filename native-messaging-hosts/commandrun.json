@@ -1,7 +1,7 @@
 {
   "name": "commandrun",
   "description": "Host for running specific commands",
-  "path": "/usr/bin/commandrun.py",
+  "path": "/usr/libexec/commandrun.py",
   "type": "stdio",
   "allowed_extensions": [ "commandrun@deschouwer.co.za" ]
 }

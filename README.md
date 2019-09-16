@@ -12,7 +12,7 @@ The list of websites and commands are configurable.
 
 You can build CommandRun from this source by running 'make all'.  To build
 CommandRun with different defaults, try:
-```ALLOWED_COMMANDS=/usr/bin/reboot make -e all
+```make prefix=/usr ALLOWED_COMMANDS=/usr/bin/reboot
 ```
 
 For more information, go to https://github.com/berenddeschouwer/commandrun
