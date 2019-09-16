@@ -33,4 +33,8 @@ the native app.
 ```make install
 ```
 
+= History =
+
+The XUL add-on was written by Achim Abeling <achimabeling@web.de>
+
 For more information, go to https://github.com/berenddeschouwer/commandrun
