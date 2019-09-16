@@ -1,6 +1,8 @@
 {
     "manifest_version": 2,
     "name": "commandrun",
+    "author": "Berend De Schouwer",
+    "homepage_url": "https://github.com/berenddeschouwer/commandrun",
     "version": "1.0",
     "description": "Allows running native commands.",
     "applications": {
