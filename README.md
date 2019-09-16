@@ -12,7 +12,25 @@ The list of websites and commands are configurable.
 
 You can build CommandRun from this source by running 'make all'.  To build
 CommandRun with different defaults, try:
-```make prefix=/usr ALLOWED_COMMANDS=/usr/bin/reboot
+```make PREFIX=/usr ALLOWED_COMMANDS=/usr/bin/reboot
+```
+
+= Install =
+
+== User ==
+
+The extension can be installed per user using the browser add-on preferences.
+
+If you choose to do this, you'll have to install the App manifest in
+~/.mozilla/native-messaging-hosts/ and edit commandrun.json to point to
+the path for the binary yourself.
+
+== System ==
+
+You can install the extension system-wide.  This will also install
+the native app.
+
+```make install
 ```
 
 For more information, go to https://github.com/berenddeschouwer/commandrun

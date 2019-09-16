@@ -1,7 +1,9 @@
 PREFIX := /usr/local
 LIBEXECDIR := $(PREFIX)/libexec
 LIBDIR := $(PREFIX)/lib
-NATIVE_MANIFEST_DIR := $(LIBDIR)/mozilla/native-messaging-hosts/
+MOZDIR := $(LIBDIR)/mozilla/
+EXTENSION_DIR := $(MOZDIR)/extensions/
+NATIVE_MANIFEST_DIR := $(MOZDIR)/mozilla/native-messaging-hosts/
 
 ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
@@ -43,3 +45,5 @@ install: all
 	install -d $(DESTDIR)$(NATIVE_MANIFEST_DIR)/
 	install -m 644 native-messaging-hosts/commandrun.json \
 	        $(DESTDIR)$(NATIVE_MANIFEST_DIR)/commandrun.json
+	install -d $(DESTDIR)$(EXTENSION_DIR)/
+	install -m 644 commandrun.zip $(DESTDIR)$(EXTENSION_DIR)/
