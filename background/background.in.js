@@ -176,6 +176,10 @@ function allowedCommand(cmd) {
         }
     }
 
+    function onError(result) {
+        console.warning("do nothing");
+    }
+
     var getting = browser.storage.sync.get("allowed_commands");
     getting.then(getCommands, onError); 
     console.log("allowed_commands:", allowed_commands);

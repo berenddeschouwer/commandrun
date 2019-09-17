@@ -58,4 +58,5 @@ check: all
 	    --jscomp_warning=lintChecks \
 	    --language_in ECMASCRIPT6_STRICT \
 	    --externs externs/externs.js \
-	    --js $(EXT_RUN)
+	    --js $(EXT_RUN) \
+	    > /dev/null
