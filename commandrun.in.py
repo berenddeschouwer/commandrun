@@ -3,11 +3,31 @@
 import json
 import sys
 import struct
-import syslog
 import os
 import subprocess
 import base64
 import signal
+import logging
+
+# pylint: disable=invalid-name
+logger = None
+
+def startLogging():
+    this = logging.getLogger('commandrun.py')
+    #
+    # Set debug according to a Makefile flag.  This is a string and not
+    # a boolean.  In Javascript they are all lowercase.
+    #
+    if "@DEBUG_FLAG@" == "true":
+        this.setLevel(logging.DEBUG)
+    else:
+        this.setLevel(logging.INFO)
+    channel = logging.StreamHandler()
+    channel.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("[%(process)d]%(levelname)s:%(funcName)s:%(lineno)s: %(message)s")
+    channel.setFormatter(formatter)
+    this.addHandler(channel)
+    return this
 
 def wait_for_children(sig, frame):
     # pylint: disable=unused-argument
@@ -19,7 +39,7 @@ def get_message():
     if not raw_length:
         sys.exit(0)
     message_length = struct.unpack('=I', raw_length)[0]
-    sys.stderr.write("message length: %d\n" % message_length)
+    logger.debug("message length: %d", message_length)
     msg = sys.stdin.buffer.read(message_length)
     msg = msg.decode("utf-8")
     return json.loads(msg)
@@ -27,8 +47,7 @@ def get_message():
 
 # Encode a message for transmission, given its content.
 def encode_message(message_content):
-    sys.stderr.write("message=%s\n" % str(message_content))
-    sys.stderr.flush()
+    logger.debug("message=%s\n", str(message_content))
     encoded_content = json.dumps(message_content).encode("utf-8")
     encoded_length = struct.pack('=I', len(encoded_content))
     return {'length': encoded_length, 'content': encoded_content}
@@ -41,10 +60,9 @@ def send_message(encoded_message):
     sys.stdout.flush()
 
 def send_response(hndl, errno, out, err=""):
-    sys.stderr.write("Handle: %d\n" % hndl)
-    sys.stderr.write("Errno: %d\n" % errno)
-    sys.stderr.write("Out: %s\n" % out)
-    sys.stderr.flush()
+    logger.debug("Handle=%d", hndl)
+    logger.debug("Errno=%d", errno)
+    logger.debug("Out=%s", out)
     response = {}
     response["handle"] = hndl
     response["errno"] = errno
@@ -55,56 +73,44 @@ def send_response(hndl, errno, out, err=""):
 
 
 def main():
-    sys.stderr.write("help\n")
+    # pylint: disable=global-statement
+    global logger
+    logger = startLogging()
+    logger.debug("changing directory")
     os.chdir("/")
+    logger.debug("waiting for signals")
     signal.signal(signal.SIGCHLD, wait_for_children)
-    sys.stderr.write("me\n")
-    #sys.stderr.flush()
-    syslog.syslog("starting")
-    sys.stderr.write("logged\n")
     while True:
-        sys.stderr.write("loop\n")
+        logger.debug("loop started")
         message = get_message()
-        sys.stderr.write("got message\n")
-        sys.stderr.write("message: %s\n" % message)
-        sys.stderr.flush()
+        logger.debug("message=%s", message)
         if message["action"] == "run":
-            sys.stderr.write("creating instance\n")
-            sys.stderr.flush()
+            logger.debug("creating instance")
             handle = message["handle"]
-            sys.stderr.write("handle of type %s\n" % type(handle))
-            sys.stderr.flush()
-            sys.stderr.write("forking\n")
-            sys.stderr.flush()
+            logger.debug("handle of type %s", type(handle))
+            logger.debug("forking")
             pid = os.fork()
-            sys.stderr.write("forked\n")
-            sys.stderr.flush()
+            logger.debug("forked")
             if pid < 0:
-                sys.stderr.write("fork crashed\n")
-                sys.stderr.flush()
+                logger.debug("fork crashed")
             elif pid > 0: # parent
-                sys.stderr.write("parent\n")
-                sys.stderr.flush()
+                logger.debug("parent")
             else:
-                sys.stderr.write("child\n")
-                sys.stderr.flush()
+                logger.debug("child")
                 myhandle = handle
                 stufftorun = message["what"]
-                sys.stderr.write("stufftorun: %s\n" % str(stufftorun))
-                sys.stderr.flush()
+                logger.debug("stufftorun: %s", str(stufftorun))
                 running = subprocess.Popen(stufftorun,
                                            stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE)
                 running.wait()
-                sys.stderr.write("sending done\n")
-                sys.stderr.flush()
+                logger.debug("sending done\n")
                 #send_message(encode_message("done"))
                 send_response(myhandle, running.returncode, running.stdout.read())
                 #  Close this process, but don't quit the main program.
                 os._exit(0) # pylint: disable=protected-access
         else:
-            sys.stderr.write("bad action\n")
-            sys.stderr.flush()
+            logger.debug("bad action: %s", message["action"])
 
 if __name__ == "__main__":
     main()

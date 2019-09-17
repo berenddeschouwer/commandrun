@@ -7,6 +7,7 @@ NATIVE_MANIFEST_DIR := $(MOZDIR)/mozilla/native-messaging-hosts/
 
 ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
+DEBUG_FLAG := true
 
 EXT_SOURCE := background/background.in.js options/options.in.js
 EXT_RUN := $(patsubst %.in.js,%.js,$(EXT_SOURCE)) \
@@ -28,6 +29,7 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 %.py: %.in.py
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
 	    -e "s|@PERMITTED_SITES@|$(PERMITTED_SITES)|g" \
+	    -e "s|@DEBUG_FLAG@|$(DEBUG_FLAG)|g" \
 	    $< > $@
 
 %.js: %.in.js
