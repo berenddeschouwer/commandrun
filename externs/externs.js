@@ -1,7 +1,14 @@
 /*
  * Closure Compiler doesn't know about cloneInto
  */
-function cloneInto() {};
+function cloneInto(ino, outo, flags) {};
+
+/*
+ * Or wrappedJSObject
+ */
+window.wrappedJSObject = {
+    CommandRun: {}
+}
 
 /*
  * Closure Compiler doesn't know browser
@@ -9,5 +16,10 @@ function cloneInto() {};
 var browser = {
     runtime: {
         connectNative: function(namespace) {}
+    },
+    storage: {
+        sync: {
+            get: function(o) {}
+        }
     }
 }
