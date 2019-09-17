@@ -44,11 +44,11 @@ function restoreOptions() {
         console.log(`Error: ${error}`);
     }
 
-    var getting = browser.storage.sync.get("allowed_commands");
-    getting.then(setCurrentCommands, onError);
+    var commands = browser.storage.sync.get("allowed_commands");
+    commands.then(setCurrentCommands, onError);
 
-    var getting = browser.storage.sync.get("permitted_sites");
-    getting.then(setCurrentSites, onError);
+    var sites = browser.storage.sync.get("permitted_sites");
+    sites.then(setCurrentSites, onError);
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
