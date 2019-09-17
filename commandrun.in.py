@@ -99,13 +99,30 @@ def wait_for_children(sig, frame):
     os.wait()
 
 
+def send_message(message):
+    """function
+
+    @param {json} message
+
+    Send the message in WebExtension Native Messaging format on stdout.
+    This means pre-pend native byte order length.
+    """
+    logger.debug("message=%s", str(message))
+    encoded_content = json.dumps(message).encode("utf-8")
+    sys.stdout.buffer.write(struct.pack('=I', len(encoded_content)))
+    sys.stdout.buffer.write(encoded_content)
+    sys.stdout.flush()
+
+
 def send_response(hndl, errno, out, err=""):
     """function
 
-    @param {int} hndl  - A matching handle
-    @param {int} errno - error number
-    @param {str} out   - stdout
-    @param {str} err   - stderr
+    @param {int}        hndl  - A matching handle
+    @param {int}        errno - error number
+    @param {byte array} out   - stdout
+    @param {byte array} err   - stderr
+
+    stdout and stderr are base64 encoded to fit into JSON
     """
     logger.debug("Handle=%d", hndl)
     logger.debug("Errno=%d", errno)
@@ -115,8 +132,7 @@ def send_response(hndl, errno, out, err=""):
     response["errno"] = errno
     response["stdout"] = base64.b64encode(out).decode("ascii")
     response["stderr"] = base64.b64encode(err).decode("ascii")
-    msg = encode_message(response)
-    send_message(msg)
+    send_message(response)
 
 
 def get_message():
@@ -140,22 +156,9 @@ def get_message():
     return json.loads(msg)
 
 
-# Encode a message for transmission, given its content.
-def encode_message(message_content):
-    logger.debug("message=%s\n", str(message_content))
-    encoded_content = json.dumps(message_content).encode("utf-8")
-    encoded_length = struct.pack('=I', len(encoded_content))
-    return {'length': encoded_length, 'content': encoded_content}
-
-
-# Send an encoded message to stdout.
-def send_message(encoded_message):
-    sys.stdout.buffer.write(encoded_message['length'])
-    sys.stdout.buffer.write(encoded_message['content'])
-    sys.stdout.flush()
-
-
 def main():
+    """main
+    """
     # pylint: disable=global-statement
     global logger
     logger = start_logging()
@@ -188,7 +191,6 @@ def main():
                                            stderr=subprocess.PIPE)
                 running.wait()
                 logger.debug("sending done\n")
-                #send_message(encode_message("done"))
                 send_response(myhandle, running.returncode, running.stdout.read())
                 #  Close this process, but don't quit the main program.
                 os._exit(0) # pylint: disable=protected-access
