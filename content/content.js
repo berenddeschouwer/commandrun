@@ -3,6 +3,8 @@
 /*
  * We need to wrap the output
  */
+console.log("content/top");
+
 function prepOut(o) {
     var a = function(something) {
         console.log("content/a(): forwarding");

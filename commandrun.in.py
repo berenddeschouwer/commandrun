@@ -7,6 +7,11 @@ import syslog
 import os
 import subprocess
 import base64
+import signal
+
+def wait_for_children(sig, frame):
+    # pylint: disable=unused-argument
+    os.wait()
 
 # Read a message from stdin and decode it.
 def get_message():
@@ -50,6 +55,8 @@ def send_response(hndl, errno, out, err=""):
 
 
 sys.stderr.write("help\n")
+os.chdir("/")
+signal.signal(signal.SIGCHLD, wait_for_children)
 sys.stderr.write("me\n")
 #sys.stderr.flush()
 syslog.syslog("starting")

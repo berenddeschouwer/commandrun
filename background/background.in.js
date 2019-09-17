@@ -6,6 +6,8 @@ On startup, connect to the "ping_pong" app.
 var runner;
 var control;
 
+console.log("background.js/top");
+
 function startRunner() {
     runner = browser.runtime.connectNative("commandrun");
     console.log("opened commandrun runner");
@@ -208,4 +210,5 @@ function handleMessage(message, sender, sendResponse) {
     return true;
 };
 
+console.log("background/running");
 browser.runtime.onMessage.addListener(handleMessage);
