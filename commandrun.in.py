@@ -78,6 +78,7 @@ def start_logging():
     # Set debug according to a Makefile flag.  This is a string and not
     # a boolean.  In Javascript they are all lowercase.
     #
+    # pylint: disable=comparison-with-itself
     if "@DEBUG_FLAG@" == "true":
         this.setLevel(logging.DEBUG)
     else:

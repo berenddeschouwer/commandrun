@@ -11,7 +11,8 @@ DEBUG_FLAG := true
 
 EXT_SOURCE := background/background.in.js options/options.in.js
 EXT_RUN := $(patsubst %.in.js,%.js,$(EXT_SOURCE)) \
-           options/options.html content/content.js
+           content/content.js
+EXT_FILES := options/options.html
 PY_SOURCE := commandrun.in.py
 PY_RUN := $(patsubst %.in.py,%.py,$(PY_SOURCE))
 
@@ -22,9 +23,9 @@ EXAMPLE_FILES := example/example.html example/example.js
 all: commandrun.zip
 
 commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
-	        $(EXT_RUN) $(PY_RUN)
+	        $(EXT_RUN) $(PY_RUN) $(EXT_FILES)
 	zip commandrun.zip $(DOC_FILES) $(EXAMPLE_FILES) $(META_FILES) \
-	    $(PY_RUN) $(EXT_RUN)
+	    $(PY_RUN) $(EXT_RUN) $(EXT_FILES)
 
 %.py: %.in.py
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
@@ -49,3 +50,12 @@ install: all
 	        $(DESTDIR)$(NATIVE_MANIFEST_DIR)/commandrun.json
 	install -d $(DESTDIR)$(EXTENSION_DIR)/
 	install -m 644 commandrun.zip $(DESTDIR)$(EXTENSION_DIR)/
+
+check: all
+	pylint $(PY_RUN)
+	closure-compiler \
+	    --warning_level=VERBOSE \
+	    --jscomp_warning=lintChecks \
+	    --language_in ECMASCRIPT6_STRICT \
+	    --externs externs/externs.js \
+	    --js $(EXT_RUN)
