@@ -10,6 +10,7 @@ import base64
 import signal
 
 def wait_for_children(sig, frame):
+    # pylint: disable=unused-argument
     os.wait()
 
 # Read a message from stdin and decode it.
@@ -40,7 +41,7 @@ def send_message(encoded_message):
     sys.stdout.flush()
 
 def send_response(hndl, errno, out, err=""):
-    sys.stderr.write("Handle: %d\n" % handle)
+    sys.stderr.write("Handle: %d\n" % hndl)
     sys.stderr.write("Errno: %d\n" % errno)
     sys.stderr.write("Out: %s\n" % out)
     sys.stderr.flush()
@@ -53,53 +54,57 @@ def send_response(hndl, errno, out, err=""):
     send_message(msg)
 
 
-sys.stderr.write("help\n")
-os.chdir("/")
-signal.signal(signal.SIGCHLD, wait_for_children)
-sys.stderr.write("me\n")
-#sys.stderr.flush()
-syslog.syslog("starting")
-sys.stderr.write("logged\n")
-while True:
-    sys.stderr.write("loop\n")
-    message = get_message()
-    sys.stderr.write("got message\n")
-    sys.stderr.write("message: %s\n" % message)
-    sys.stderr.flush()
-    if message["action"] == "run":
-        sys.stderr.write("creating instance\n")
+def main():
+    sys.stderr.write("help\n")
+    os.chdir("/")
+    signal.signal(signal.SIGCHLD, wait_for_children)
+    sys.stderr.write("me\n")
+    #sys.stderr.flush()
+    syslog.syslog("starting")
+    sys.stderr.write("logged\n")
+    while True:
+        sys.stderr.write("loop\n")
+        message = get_message()
+        sys.stderr.write("got message\n")
+        sys.stderr.write("message: %s\n" % message)
         sys.stderr.flush()
-        handle = message["handle"]
-        sys.stderr.write("handle of type %s\n" % type(handle))
-        sys.stderr.flush()
-        sys.stderr.write("forking\n")
-        sys.stderr.flush()
-        pid = os.fork()
-        sys.stderr.write("forked\n")
-        sys.stderr.flush()
-        if pid < 0:
-            sys.stderr.write("fork crashed\n")
+        if message["action"] == "run":
+            sys.stderr.write("creating instance\n")
             sys.stderr.flush()
-        elif pid > 0: # parent
-            sys.stderr.write("parent\n")
+            handle = message["handle"]
+            sys.stderr.write("handle of type %s\n" % type(handle))
             sys.stderr.flush()
+            sys.stderr.write("forking\n")
+            sys.stderr.flush()
+            pid = os.fork()
+            sys.stderr.write("forked\n")
+            sys.stderr.flush()
+            if pid < 0:
+                sys.stderr.write("fork crashed\n")
+                sys.stderr.flush()
+            elif pid > 0: # parent
+                sys.stderr.write("parent\n")
+                sys.stderr.flush()
+            else:
+                sys.stderr.write("child\n")
+                sys.stderr.flush()
+                myhandle = handle
+                stufftorun = message["what"]
+                sys.stderr.write("stufftorun: %s\n" % str(stufftorun))
+                sys.stderr.flush()
+                running = subprocess.Popen(stufftorun,
+                                           stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
+                running.wait()
+                sys.stderr.write("sending done\n")
+                sys.stderr.flush()
+                #send_message(encode_message("done"))
+                send_response(myhandle, running.returncode, running.stdout.read())
+                #  Close this process, but don't quit the main program.
+                os._exit(0) # pylint: disable=protected-access
         else:
-            sys.stderr.write("child\n")
+            sys.stderr.write("bad action\n")
             sys.stderr.flush()
-            myhandle = handle
-            stufftorun = message["what"]
-            sys.stderr.write("stufftorun: %s\n" % str(stufftorun))
-            sys.stderr.flush()
-            running = subprocess.Popen(stufftorun,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-            running.wait()
-            sys.stderr.write("sending done\n")
-            sys.stderr.flush()
-            #send_message(encode_message("done"))
-            send_response(myhandle, running.returncode, running.stdout.read())
-            #  Close this process, but don't quit the main program.
-            os._exit(0) # pylint: disable=protected-access
-    else:
-        sys.stderr.write("bad action\n")
-        sys.stderr.flush()
+
+if __name__ == "__main__":
+    main()
