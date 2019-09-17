@@ -196,6 +196,8 @@ def main():
                 os._exit(0) # pylint: disable=protected-access
         else:
             logger.debug("bad action: %s", message["action"])
+            handle = message["handle"]
+            send_response(handle, -1, "", "unknown action")
 
 
 if __name__ == "__main__":
