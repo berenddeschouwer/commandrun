@@ -1,3 +1,5 @@
+"use strict";
+
 function stringToArray(s) {
     var regex = /, /gi;
     s = s.replace(regex, ' ');
