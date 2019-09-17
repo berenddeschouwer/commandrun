@@ -1,9 +1,5 @@
 #!/usr/bin/python3
 
-# Note that running python with the `-u` flag is required on Windows,
-# in order to ensure that stdin and stdout are opened in binary, rather
-# than text, mode.
-
 import json
 import sys
 import struct
@@ -19,9 +15,9 @@ def get_message():
         sys.exit(0)
     message_length = struct.unpack('=I', raw_length)[0]
     sys.stderr.write("message length: %d\n" % message_length)
-    message = sys.stdin.buffer.read(message_length)
-    message = message.decode("utf-8")
-    return json.loads(message)
+    msg = sys.stdin.buffer.read(message_length)
+    msg = msg.decode("utf-8")
+    return json.loads(msg)
 
 
 # Encode a message for transmission, given its content.
@@ -39,13 +35,13 @@ def send_message(encoded_message):
     sys.stdout.buffer.write(encoded_message['content'])
     sys.stdout.flush()
 
-def send_response(handle, errno, out, err=""):
+def send_response(hndl, errno, out, err=""):
     sys.stderr.write("Handle: %d\n" % handle)
     sys.stderr.write("Errno: %d\n" % errno)
     sys.stderr.write("Out: %s\n" % out)
     sys.stderr.flush()
     response = {}
-    response["handle"] = handle
+    response["handle"] = hndl
     response["errno"] = errno
     response["stdout"] = base64.b64encode(out).decode("ascii")
     response["stderr"] = err
@@ -81,7 +77,6 @@ while True:
         elif pid > 0: # parent
             sys.stderr.write("parent\n")
             sys.stderr.flush()
-            pass
         else:
             sys.stderr.write("child\n")
             sys.stderr.flush()
@@ -90,13 +85,15 @@ while True:
             sys.stderr.write("stufftorun: %s\n" % str(stufftorun))
             sys.stderr.flush()
             running = subprocess.Popen(stufftorun,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
             running.wait()
             sys.stderr.write("sending done\n")
             sys.stderr.flush()
             #send_message(encode_message("done"))
             send_response(myhandle, running.returncode, running.stdout.read())
-            os._exit(0) # quit forked process
+            #  Close this process, but don't quit the main program.
+            os._exit(0) # pylint: disable=protected-access
     else:
         sys.stderr.write("bad action\n")
         sys.stderr.flush()
