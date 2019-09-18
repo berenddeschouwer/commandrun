@@ -21,7 +21,7 @@ function restoreOptions() {
     function setCurrentCommands(result) {
         var allowed_commands;
         if (result.allowed_commands) {
-            console.log("saved commands:", result.allowed_commands);
+            console.debug("saved commands:", result.allowed_commands);
             allowed_commands = result.allowed_commands.join(", ");
         } else {
             allowed_commands = "@ALLOWED_COMMANDS@";
@@ -32,7 +32,7 @@ function restoreOptions() {
     function setCurrentSites(result) {
         var permitted_sites;
         if (result.permitted_sites) {
-            console.log("permitted sites:", result.permitted_sites);
+            console.debug("permitted sites:", result.permitted_sites);
             permitted_sites = result.permitted_sites.join(", ");
         } else {
             permitted_sites = "@PERMITTED_SITES@";
@@ -41,7 +41,7 @@ function restoreOptions() {
     }
 
     function onError(error) {
-        console.log(`Error: ${error}`);
+        console.debug(`Error: ${error}`);
     }
 
     var commands = browser.storage.sync.get("allowed_commands");

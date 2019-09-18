@@ -69,22 +69,22 @@ Controller.prototype.setURL = function(pid, url) {
 Controller.prototype.sendResponse = function(response) {
     var pid = response.handle;
     var responder = this.pids[pid];
-    console.log("going to respond on ", responder);
-    console.log("responding with ", response);
+    console.debug("going to respond on ", responder);
+    console.debug("responding with ", response);
     response.stdout = atob(response.stdout);
     response.stderr = atob(response.stderr);
     response.handle = undefined;
-    console.log("responding with ", response);
+    console.debug("responding with ", response);
     responder(response);
-    console.log("responded");
+    console.debug("responded");
 }
 
 Controller.prototype.prepare = function(pid) {
     //var msg = {action:"run", what:message, handle:pid};
     //runner.postMessage(msg);
-    console.log("Controller.prepare():", pid);
+    console.debug("Controller.prepare():", pid);
     function onError(error) {
-        console.log(`Error: ${error}`);
+        console.warn(`Error: ${error}`);
     }
     function permitted(url, list) {
         console.log("permitted(): start");

@@ -2,9 +2,9 @@
 
 var CommandRun = {
     run: function(command, output) {
-        console.log("sending a message");
+        console.debug("sending a message");
         var p = browser.runtime.sendMessage(command);
-        console.log("sent message, received promise:", p);
+        console.debug("sent message, received promise:", p);
         p.then(
             /**
              *  @param {{errno: number, stdout:string, stderr: string}} o
@@ -22,7 +22,7 @@ var CommandRun = {
             console.warn("response to sendMessage() failed promise");
             output(-1, "", "received bad response");
         });
-        console.log("received promise:", p);
+        console.debug("received promise:", p);
     }
 }
 
