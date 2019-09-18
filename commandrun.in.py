@@ -115,7 +115,7 @@ def send_message(message):
     sys.stdout.flush()
 
 
-def send_response(hndl, errno, out, err=""):
+def send_response(hndl, errno, out, err=bytes()):
     """function
 
     @param {int}        hndl  - A matching handle
