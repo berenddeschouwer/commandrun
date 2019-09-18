@@ -1,42 +1,35 @@
 "use strict";
 
-/*
- * We need to wrap the output
- */
-console.log("content/top");
-
-function prepOut(o) {
-    var a = function(something) {
-        console.log("content/a(): forwarding");
-        console.log("content/a():", something);
-        o(something.errno, atob(something.stdout), something.stderr);
-        console.log("content/a(): forwarded");
-    };
-    return(a);
-}
-
-function stuffit(a, b, c) {
-    console.log("success");
-    console.log(a);
-    console.log(b);
-    console.log(c);
-}
-
-function error(o) {
-    console.log("error");
-}
-
 var CommandRun = {
     run: function(command, output) {
         console.log("sending a message");
         var p = browser.runtime.sendMessage(command);
         console.log("sent message, received promise:", p);
-        var zme = prepOut(output);
-        p.then(zme, error);
+        p.then(
+            /**
+             *  @param {{errno: number, stdout:string, stderr: string}} o
+             */
+        (o) => {
+            if ((typeof o.errno === "undefined") ||
+                (typeof o.stdout === "undefined") ||
+                (typeof o.stderr === "undefined")) {
+                output(-1, "", "incomplete response");
+            } else {
+                output(o.errno, o.stdout, o.stderr);
+            }
+        },
+        () => {
+            console.warn("response to sendMessage() failed promise");
+            output(-1, "", "received bad response");
+        });
         console.log("received promise:", p);
     }
 }
 
+
+/*
+ *  Wrap commandRun into the page, for easy usage.
+ */
 if (!window.wrappedJSObject.CommandRun) {
     window.wrappedJSObject.CommandRun = cloneInto(CommandRun, window,
                                                   {cloneFunctions: true});

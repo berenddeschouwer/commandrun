@@ -71,6 +71,10 @@ Controller.prototype.sendResponse = function(response) {
     var responder = this.pids[pid];
     console.log("going to respond on ", responder);
     console.log("responding with ", response);
+    response.stdout = atob(response.stdout);
+    response.stderr = atob(response.stderr);
+    response.handle = undefined;
+    console.log("responding with ", response);
     responder(response);
     console.log("responded");
 }
