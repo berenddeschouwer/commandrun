@@ -41,7 +41,7 @@ function restoreOptions() {
     }
 
     function onError(error) {
-        console.debug(`Error: ${error}`);
+        console.warn(`Error: ${error}`);
     }
 
     var commands = browser.storage.sync.get("allowed_commands");
