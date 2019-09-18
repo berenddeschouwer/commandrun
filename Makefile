@@ -53,10 +53,12 @@ install: all
 
 check: all
 	pylint $(PY_RUN)
-	closure-compiler \
-	    --warning_level=VERBOSE \
-	    --jscomp_warning=lintChecks \
-	    --language_in ECMASCRIPT6_STRICT \
-	    --externs externs/externs.js \
-	    --js $(EXT_RUN) \
-	    > /dev/null
+	$(foreach var,$(EXT_RUN),\
+	    closure-compiler \
+	        --warning_level=VERBOSE \
+	        --jscomp_warning=lintChecks \
+	        --language_in ECMASCRIPT6_STRICT \
+	        --externs externs/externs.js \
+	        --js $(var) \
+	    > /dev/null \
+	;)
