@@ -6,14 +6,15 @@ On startup, connect to the "ping_pong" app.
 var runner;
 var control;
 
-console.log("background.js/top");
+console.debug("background.js/top");
 
 function startRunner() {
+    console.log("starting native app");
     runner = browser.runtime.connectNative("commandrun");
-    console.log("opened commandrun runner");
+    console.debug("opened commandrun runner");
 
     runner.onDisconnect.addListener((p) => {
-        console.log("disconnected");
+        console.warn("disconnected");
         setTimeout(startRunner, 60 * 1000);
     });
 
@@ -21,9 +22,9 @@ function startRunner() {
     Listen for messages from the app.
     */
     runner.onMessage.addListener((response) => {
-        console.log("Received: " + response);
+        console.debug("Received: " + response);
         control.sendResponse(response);
-        console.log("processed: " + response);
+        console.debug("processed: " + response);
     });
 }
 
@@ -33,7 +34,7 @@ startRunner();
 On a click on the browser action, send the app a message.
 */
 browser.runtime.onInstalled.addListener(function(stuff){
-    console.log("installed me");
+    console.debug("installed me");
 });
 
 var Controller = function() {
@@ -44,26 +45,27 @@ var Controller = function() {
 }
 
 Controller.prototype.newPid = function() {
-    console.log("Controller.newPid()");
+    console.debug("Controller.newPid()");
+    console.warn("we should not always return 0");
     return 0;
 }
 
 Controller.prototype.setResponder = function(pid, responder) {
-    console.log("Controller.setResponder()");
+    console.debug("Controller.setResponder()");
     this.pids[pid] = responder;
-    console.log("Controller.setResponder(): done");
+    console.debug("Controller.setResponder(): done");
 }
 
 Controller.prototype.setCommand = function(pid, command) {
-    console.log("Controller.setCommand()");
+    console.debug("Controller.setCommand()");
     this.commands[pid] = command;
-    console.log("Controller.setCommand(): done");
+    console.debug("Controller.setCommand(): done");
 }
 
 Controller.prototype.setURL = function(pid, url) {
-    console.log("Controller.setURL()");
+    console.debug("Controller.setURL()");
     this.urls[pid] = url;
-    console.log("Controller.setURL(): done");
+    console.debug("Controller.setURL(): done");
 }
 
 Controller.prototype.sendResponse = function(response) {
@@ -87,30 +89,30 @@ Controller.prototype.prepare = function(pid) {
         console.warn(`Error: ${error}`);
     }
     function permitted(url, list) {
-        console.log("permitted(): start");
+        console.debug("permitted(): start");
         var u = new URL(url);
         var found = false;
-        console.log("permitted(): hostname=", u.hostname);
+        console.debug("permitted(): hostname=", u.hostname);
         list.forEach(function(element) {
-            console.log("permitted(): matching=", element);
+            console.debug("permitted(): matching=", element);
             if (element[0] == "*") {
                 element = element.substring(element.length - 1);
-                console.log("permitted(): matching chopped=", element);
+                console.debug("permitted(): matching chopped=", element);
             }
             if (u.hostname.length < element.length) {
-                console.log("permitted(): too short");
+                console.debug("permitted(): too short");
                 return; 
             }
             if (u.hostname == element) {
-                console.log("permitted(): exact match");
+                console.debug("permitted(): exact match");
                 found = true;
                 return;
             }
             if (element[0] == ".") {
                 var end = u.hostname.substring(u.hostname.length - element.length);
-                console.log("permitted(): considering=", end);
+                console.debug("permitted(): considering=", end);
                 if (element == end) {
-                    console.log("permitted(): domain match");
+                    console.debug("permitted(): domain match");
                     found = true;
                     return;
                 }
@@ -119,49 +121,49 @@ Controller.prototype.prepare = function(pid) {
         return found;
     }
     function checkAndRun(that, pid) {
-        console.log("checkAndRun(): starting with pid=", pid);
-        console.log("checkAndRun(): this=", that);
+        console.debug("checkAndRun(): starting with pid=", pid);
+        console.debug("checkAndRun(): this=", that);
         var message = that.commands[pid];
-        console.log("checkAndRun(): message=", message);
+        console.debug("checkAndRun(): message=", message);
         var cmd = message[0];
         var responder = that.pids[pid];
         var url = that.urls[pid];
-        console.log("checkAndRun(): stopping");
+        console.debug("checkAndRun(): stopping");
         return function(result) {
             var allowed_commands;
             var permitted_sites;
             var command = cmd;
             if (result.allowed_commands) {
-                console.log("background/saved commands:", result.allowed_commands);
+                console.debug("background/saved commands:", result.allowed_commands);
                 allowed_commands = result.allowed_commands;
             } else {
-                console.log("background/no allowed commands set");
+                console.debug("background/no allowed commands set");
                 allowed_commands = ["@ALLOWED_COMMANDS@"];
             }
             if (result.permitted_sites) {
-                console.log("background/permitted sites:", result.permitted_sites);
+                console.debug("background/permitted sites:", result.permitted_sites);
                 permitted_sites = result.permitted_sites;
             } else {
-                console.log("background/no permitted set");
+                console.debug("background/no permitted set");
                 permitted_sites = ["@PERMITTED_SITES@"];
             }
             if (allowed_commands.includes(cmd) &&
                 permitted(url, permitted_sites)) {
-                 console.log("allowed command, forwarding");
+                 console.debug("allowed command, forwarding");
                  var msg = {action:"run", what:message, handle:pid};
                  runner.postMessage(msg);
             } else {
-                 console.log("forbidden command");
+                 console.debug("forbidden command");
                  var response = {handle: pid, errno: -1, stdout: "", stderr: "forbidden command"};
                  responder(response);
             }
         }
     }
-    console.log("Controller.prepare(): syncing storage");
+    console.debug("Controller.prepare(): syncing storage");
     var processor = checkAndRun(this,pid);
-    console.log("Controller.prepare():", processor);
+    console.debug("Controller.prepare():", processor);
     var getting = browser.storage.sync.get(["allowed_commands", "permitted_sites"]);
-    console.log("Controller.prepare(): chainging promise");
+    console.debug("Controller.prepare(): chainging promise");
     getting.then(processor, onError); 
 }
 
@@ -172,51 +174,51 @@ function allowedCommand(cmd) {
 
     function getCommands(result) {
         if (result.allowed_commands) {
-            console.log("background/saved commands:", result.allowed_commands);
+            console.debug("background/saved commands:", result.allowed_commands);
             allowed_commands = result.allowed_commands.join(" ");
         } else {
-            console.log("background/no allowed commands set");
+            console.debug("background/no allowed commands set");
             allowed_commands = "/usr/bin/ls";
         }
     }
 
     function onError(result) {
-        console.warning("do nothing");
+        console.warn("do nothing");
     }
 
     var getting = browser.storage.sync.get("allowed_commands");
     getting.then(getCommands, onError); 
-    console.log("allowed_commands:", allowed_commands);
+    console.debug("allowed_commands:", allowed_commands);
     return allowed_commands.includes(cmd);
 }
 
 function handleMessage(message, sender, sendResponse) {
-    console.log("received message");
-    console.log("received: ", message);
+    console.debug("received message");
+    console.debug("received: ", message);
     var command = message[0];
-    console.log("command:", command);
-    console.log("from: ", sender);
-    console.log("respond on: ", sendResponse);
+    console.debug("command:", command);
+    console.debug("from: ", sender);
+    console.debug("respond on: ", sendResponse);
     //response = {errno: 0, stdout: "pong", stderr: ""};
     //sendResponse(response);
     var pid = control.newPid();
-    console.log("got pid:", pid);
-    console.log("control:", control);
-    console.log("control.setResponder:", control.setResponder);
+    console.debug("got pid:", pid);
+    console.debug("control:", control);
+    console.debug("control.setResponder:", control.setResponder);
     var responder=function(message) {
-        console.log("responder wrapper", message);
+        console.debug("responder wrapper", message);
         sendResponse(message);
-        console.log("responder wrapper done");
+        console.debug("responder wrapper done");
     }
     control.setResponder(pid, sendResponse);
     control.setCommand(pid, message);
     control.setURL(pid, sender.url);
-    console.log("set responder");
-    console.log("sending message");
+    console.debug("set responder");
+    console.debug("sending message");
     control.prepare(pid);
-    console.log("sent message");
+    console.debug("sent message");
     return true;
 };
 
-console.log("background/running");
+console.debug("background/running");
 browser.runtime.onMessage.addListener(handleMessage);
