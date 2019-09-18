@@ -1,11 +1,26 @@
 "use strict";
 
+
+/**
+ * @function
+ * @param {string} s - string to turn to an array
+ * @returns {Array<string>}
+ *
+ * A string separated with ' ' or ', ' is turned into an array of strings.
+ */
 function stringToArray(s) {
     var regex = /, /gi;
     s = s.replace(regex, ' ');
     return s.split(' ');
 } 
 
+
+/**
+ * @function
+ * @param {Event} e
+ *
+ * Save the user's choice to browser storage.
+ */
 function saveOptions(e) {
     e.preventDefault();
     var allowed_commands = stringToArray(document.querySelector("#allowed_commands").value);
@@ -51,5 +66,9 @@ function restoreOptions() {
     sites.then(setCurrentSites, onError);
 }
 
+
+/*
+ * Add triggers on the document to get/set options.
+ */
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
