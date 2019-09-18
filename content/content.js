@@ -11,7 +11,11 @@
 var CommandRun = {
     run:
         /**
-         *  @function
+         *  Runs a command
+         *
+         *  Takes a given command, and hands it over to the background process
+         *  for running.  Options to the command can be provided.
+         *
          *  @param {Array} command -   The command to run.  Array[0] is the
          *                             command, and Array[1..] are parameters
          *  @param {function(number, string, string)} output -

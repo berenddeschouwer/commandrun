@@ -2,11 +2,10 @@
 
 
 /**
- * @function
+ * A string separated with ' ' or ', ' is turned into an array of strings.
+ *
  * @param {string} s - string to turn to an array
  * @returns {Array<string>}
- *
- * A string separated with ' ' or ', ' is turned into an array of strings.
  */
 function stringToArray(s) {
     var regex = /, /gi;
@@ -16,10 +15,9 @@ function stringToArray(s) {
 
 
 /**
- * @function
- * @param {Event} e
- *
  * Save the user's choice to browser storage.
+ *
+ * @param {Event} e
  */
 function saveOptions(e) {
     e.preventDefault();
@@ -31,8 +29,18 @@ function saveOptions(e) {
     });
 }
 
+
+/**
+ * Load options from browser storage, and set defaults if none found.
+ */
 function restoreOptions() {
 
+    /**
+     * Set the current allowed commands.
+     *
+     * @param {Object} result - A data structure with parameters loaded
+     *                          from browser storage
+     */
     function setCurrentCommands(result) {
         var allowed_commands;
         if (result.allowed_commands) {
@@ -44,6 +52,12 @@ function restoreOptions() {
         document.querySelector("#allowed_commands").value = allowed_commands;
     }
 
+    /**
+     * Set the list of currently permitted sites
+     *
+     * @param {Object} result - A data structure with parameters loaded
+     *                          from browser storage
+     */
     function setCurrentSites(result) {
         var permitted_sites;
         if (result.permitted_sites) {
@@ -55,6 +69,9 @@ function restoreOptions() {
         document.querySelector("#permitted_sites").value = permitted_sites;
     }
 
+    /**
+     * Act on Errors to the browser storage.  Does nothing.
+     */
     function onError(error) {
         console.warn(`Error: ${error}`);
     }
