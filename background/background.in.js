@@ -172,13 +172,37 @@ Controller.prototype.sendResponse = function(response) {
     console.debug("responded");
 }
 
+
+/**
+ *  Prepare to run a command
+ *
+ *  This will perform checks, eg. if the command is allowed to run, and
+ *  setup all return functions, and then run the command.
+ *
+ *  @function
+ *  @param {number} pid
+ */
 Controller.prototype.prepare = function(pid) {
     //var msg = {action:"run", what:message, handle:pid};
     //runner.postMessage(msg);
     console.debug("Controller.prepare():", pid);
+
+    /**
+     *  What to do when browser storage fails
+     */
     function onError(error) {
         console.warn(`Error: ${error}`);
     }
+
+    /**
+     *  Check that the URL matches the permitted list
+     *
+     *  @function
+     *  @param {string} url
+     *  @param {Array.<string>} list
+     *
+     *  @returns {boolean}
+     */
     function permitted(url, list) {
         console.debug("permitted(): start");
         var u = new URL(url);
@@ -211,6 +235,18 @@ Controller.prototype.prepare = function(pid) {
         });
         return found;
     }
+
+    /**
+     *  Check that we are allowed to run, and then run.
+     *
+     *  This is a closure to match a promise.
+     *
+     *  @function
+     *  @param {Object} that
+     *  @param {number} pid
+     *
+     *  @returns {function(Object)}
+     */
     function checkAndRun(that, pid) {
         console.debug("checkAndRun(): starting with pid=", pid);
         console.debug("checkAndRun(): this=", that);
@@ -220,8 +256,16 @@ Controller.prototype.prepare = function(pid) {
         var responder = that.responders[pid];
         var url = that.urls[pid];
         console.debug("checkAndRun(): stopping");
-        return function(result) {
+        /**
+         *  Actual CheckAndRun
+         *
+         *  @function
+         *  @param {Object} result
+         */
+        var checker = function(result) {
+            /** @type {Array.<string>} */
             var allowed_commands;
+            /** @type {Array.<string>} */
             var permitted_sites;
             /*var command = cmd;*/
             if (result.allowed_commands) {
@@ -249,6 +293,7 @@ Controller.prototype.prepare = function(pid) {
                  responder(response);
             }
         }
+        return checker;
     }
     console.debug("Controller.prepare(): syncing storage");
     var processor = checkAndRun(this,pid);
@@ -284,7 +329,24 @@ function allowedCommand(cmd) {
 }
 */
 
-function handleMessage(message, sender, sendResponse) {
+
+/**
+ *  Receive a Message from the content page
+ *
+ *  Receive a message and run the command.  A response will be
+ *  sent asynchronously.  If the site isn't allowed to run the command,
+ *  it will receive an error.
+ *
+ *  @function
+ *  @param {Object} message
+ *  @param {Object} sender
+ *  @param {function({errno: number,
+ *                    stdout: string,
+ *                    stderr: string})} sendResponse - where to send the
+ *                                                     response
+ *  @returns {boolean} true
+ */
+function ContentRequest(message, sender, sendResponse) {
     console.debug("received message");
     console.debug("received: ", message);
     var command = message[0];
@@ -317,4 +379,4 @@ function handleMessage(message, sender, sendResponse) {
 
 startRunner();
 control = new Controller();
-browser.runtime.onMessage.addListener(handleMessage);
+browser.runtime.onMessage.addListener(ContentRequest);
