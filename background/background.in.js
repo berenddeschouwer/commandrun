@@ -59,45 +59,124 @@ function startRunner() {
 startRunner();
 
 
+/**
+ *  Keeps track of the commands being run.
+ *
+ *  We run commands asynchronously, and receive responses back, so we
+ *  need to keep track of multiple commands for some seconds.
+ *
+ *  @constructor
+ */
 var Controller = function() {
-    this.pids = {};
-    this.commands = {};
-    this.urls = {};
+    /** @type {Array.<function({errno: number,
+     *                          stdout: string,
+     *                          stderr: string})>} */
+    this.responders = [];
+    /** @type {Array.<Array.<string>>} */
+    this.commands = [];
+    /** @type {Array.<string>} */
+    this.urls = [];
     return this;
 }
 
+
+/**
+ *  Generate a PID
+ *
+ *  @todo this works for (number of commands) << (max size of array)
+ *
+ *  @function
+ *  @returns {number}
+ */
 Controller.prototype.newPid = function() {
     console.debug("Controller.newPid()");
     console.warn("we should not always return 0");
-    return 0;
+    return this.responders.length;
 }
 
+
+/**
+ *  Save the responder function
+ *
+ *  When the asynchronous command returns, we need to respond to the
+ *  Promise.  To do that, we first save the responder.
+ *
+ *  @function
+ *  @param {number} pid - identifier of command (not an OS pid)
+ *  @param {function({errno: number,
+ *                    stdout: string,
+ *                    stderr: string})} responder
+ */
 Controller.prototype.setResponder = function(pid, responder) {
     console.debug("Controller.setResponder()");
-    this.pids[pid] = responder;
+    this.responders[pid] = responder;
     console.debug("Controller.setResponder(): done");
 }
 
+
+/**
+ *  Save the command
+ *
+ *  When the command is submitted, we need to check it to the list of
+ *  allowed commands before running it.  That list comes from browser
+ *  storage, which is asynchronous.  We save it, so we can compare it
+ *  when the browser storage completes, so we can check it before running
+ *  it.
+ *
+ *  @function
+ *  @param {number} pid            - identifier of command (not an OS pid)
+ *  @param {Array<string>} command - command to run
+ */
 Controller.prototype.setCommand = function(pid, command) {
     console.debug("Controller.setCommand()");
     this.commands[pid] = command;
     console.debug("Controller.setCommand(): done");
 }
 
+
+/**
+ *  Save the URL
+ *
+ *  When the command is submitted, we need to check it to the list of
+ *  permitted sites before running it.  That list comes from browser
+ *  storage, which is asynchronous.  We save it, so we can compare it
+ *  when the browser storage completes, so we can check it before running
+ *  it.
+ *
+ *  @function
+ *  @param {number} pid - identifier of command (not an OS pid)
+ *  @param {string} url - site that wants to run the command
+ */
 Controller.prototype.setURL = function(pid, url) {
     console.debug("Controller.setURL()");
     this.urls[pid] = url;
     console.debug("Controller.setURL(): done");
 }
 
+
+/**
+ *  Complete the promise
+ *
+ *  When the command has completed, we need to send the output back
+ *  to the content page.
+ *
+ *  We strip out the pid, and remove the base64 encoding.  Python uses
+ *  UTF-8, and Javascript uses UTF-16.
+ *
+ *  @function
+ *  @param {{handle: number,
+ *           errno: number,
+ *           stdout: string,
+ *           stderr: string}} response
+ */
 Controller.prototype.sendResponse = function(response) {
     var pid = response.handle;
-    var responder = this.pids[pid];
+    var responder = this.responders[pid];
     console.debug("going to respond on ", responder);
     console.debug("responding with ", response);
     response.stdout = atob(response.stdout);
     response.stderr = atob(response.stderr);
-    response.handle = undefined;
+    delete response.handle;
     console.debug("responding with ", response);
     responder(response);
     console.debug("responded");
@@ -148,7 +227,7 @@ Controller.prototype.prepare = function(pid) {
         var message = that.commands[pid];
         console.debug("checkAndRun(): message=", message);
         var cmd = message[0];
-        var responder = that.pids[pid];
+        var responder = that.responders[pid];
         var url = that.urls[pid];
         console.debug("checkAndRun(): stopping");
         return function(result) {
