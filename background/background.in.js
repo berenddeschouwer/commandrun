@@ -223,7 +223,7 @@ Controller.prototype.prepare = function(pid) {
         return function(result) {
             var allowed_commands;
             var permitted_sites;
-            var command = cmd;
+            /*var command = cmd;*/
             if (result.allowed_commands) {
                 console.debug("background/saved commands:", result.allowed_commands);
                 allowed_commands = result.allowed_commands;
@@ -297,11 +297,13 @@ function handleMessage(message, sender, sendResponse) {
     console.debug("got pid:", pid);
     console.debug("control:", control);
     console.debug("control.setResponder:", control.setResponder);
+    /*
     var responder=function(message) {
         console.debug("responder wrapper", message);
         sendResponse(message);
         console.debug("responder wrapper done");
     }
+    */
     control.setResponder(pid, sendResponse);
     control.setCommand(pid, message);
     control.setURL(pid, sender.url);
