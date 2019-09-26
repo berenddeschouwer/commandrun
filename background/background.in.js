@@ -304,32 +304,6 @@ Controller.prototype.prepare = function(pid) {
 }
 
 
-/* UNUSED
-function allowedCommand(cmd) {
-    var allowed_commands;
-
-    function getCommands(result) {
-        if (result.allowed_commands) {
-            console.debug("background/saved commands:", result.allowed_commands);
-            allowed_commands = result.allowed_commands.join(" ");
-        } else {
-            console.debug("background/no allowed commands set");
-            allowed_commands = "/usr/bin/ls";
-        }
-    }
-
-    function onError(result) {
-        console.warn("do nothing");
-    }
-
-    var getting = browser.storage.sync.get("allowed_commands");
-    getting.then(getCommands, onError); 
-    console.debug("allowed_commands:", allowed_commands);
-    return allowed_commands.includes(cmd);
-}
-*/
-
-
 /**
  *  Receive a Message from the content page
  *
@@ -353,19 +327,10 @@ function ContentRequest(message, sender, sendResponse) {
     console.debug("command:", command);
     console.debug("from: ", sender);
     console.debug("respond on: ", sendResponse);
-    //response = {errno: 0, stdout: "pong", stderr: ""};
-    //sendResponse(response);
     var pid = control.newPid();
     console.debug("got pid:", pid);
     console.debug("control:", control);
     console.debug("control.setResponder:", control.setResponder);
-    /*
-    var responder=function(message) {
-        console.debug("responder wrapper", message);
-        sendResponse(message);
-        console.debug("responder wrapper done");
-    }
-    */
     control.setResponder(pid, sendResponse);
     control.setCommand(pid, message);
     control.setURL(pid, sender.url);
