@@ -10,15 +10,6 @@ var runner;
 var control;
 
 
-/*
- *  On a click on the browser action, send the app a message.
- */
-browser.runtime.onInstalled.addListener(function(stuff){
-    console.debug("installed me");
-});
-console.debug("background.js/top");
-
-
 /**
  *  Starts the Native App
  *
@@ -56,7 +47,6 @@ function startRunner() {
             console.debug("processed: " + response);
     });
 }
-startRunner();
 
 
 /**
@@ -268,8 +258,8 @@ Controller.prototype.prepare = function(pid) {
     getting.then(processor, onError); 
 }
 
-control = new Controller();
 
+/* UNUSED
 function allowedCommand(cmd) {
     var allowed_commands;
 
@@ -292,6 +282,7 @@ function allowedCommand(cmd) {
     console.debug("allowed_commands:", allowed_commands);
     return allowed_commands.includes(cmd);
 }
+*/
 
 function handleMessage(message, sender, sendResponse) {
     console.debug("received message");
@@ -321,5 +312,7 @@ function handleMessage(message, sender, sendResponse) {
     return true;
 }
 
-console.debug("background/running");
+
+startRunner();
+control = new Controller();
 browser.runtime.onMessage.addListener(handleMessage);
