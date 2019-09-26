@@ -1,41 +1,63 @@
 "use strict";
 
 /*
-On startup, connect to the "ping_pong" app.
-*/
+ *  Workhorse for CommandRun
+ *
+ *  Talks to the Native App, and the content page using messages.
+ */
+var RESTART_TIME = 60 * 1000; /* 1 minute */
 var runner;
 var control;
 
+
+/*
+ *  On a click on the browser action, send the app a message.
+ */
+browser.runtime.onInstalled.addListener(function(stuff){
+    console.debug("installed me");
+});
 console.debug("background.js/top");
 
+
+/**
+ *  Starts the Native App
+ *
+ *  Start the native app, and start a watchdog to restart the Native App
+ *  if it crashes.  It delays restarts to prevent running wild.
+ */
 function startRunner() {
     console.log("starting native app");
     runner = browser.runtime.connectNative("commandrun");
     console.debug("opened commandrun runner");
 
-    runner.onDisconnect.addListener((p) => {
-        console.warn("disconnected");
-        setTimeout(startRunner, 60 * 1000);
+    runner.onDisconnect.addListener(
+        /**
+         *  Restart the Native App if it disconnects.
+         *
+         *  @param {Port} p - Error code.  We ignore it, and restart regardless.
+         */
+        (p) => {
+            console.warn("disconnected");
+            setTimeout(startRunner, RESTART_TIME);
     });
 
-    /*
-    Listen for messages from the app.
-    */
-    runner.onMessage.addListener((response) => {
-        console.debug("Received: " + response);
-        control.sendResponse(response);
-        console.debug("processed: " + response);
+    runner.onMessage.addListener(
+        /**
+         *  Listen for messages from the app
+         *
+         *  Listen for messges from the app.  This just sends them pack to
+         *  the controller.
+         *
+         *  @param {Object} response - Native Message response.
+         */
+        (response) => {
+            console.debug("Received: " + response);
+            control.sendResponse(response);
+            console.debug("processed: " + response);
     });
 }
-
 startRunner();
 
-/*
-On a click on the browser action, send the app a message.
-*/
-browser.runtime.onInstalled.addListener(function(stuff){
-    console.debug("installed me");
-});
 
 var Controller = function() {
     this.pids = {};
@@ -218,7 +240,7 @@ function handleMessage(message, sender, sendResponse) {
     control.prepare(pid);
     console.debug("sent message");
     return true;
-};
+}
 
 console.debug("background/running");
 browser.runtime.onMessage.addListener(handleMessage);

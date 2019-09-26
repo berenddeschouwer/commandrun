@@ -15,7 +15,10 @@ window.wrappedJSObject = {
  */
 var browser = {
     runtime: {
-        connectNative: function(namespace) {}
+        connectNative: function(namespace) {},
+        onInstalled: {
+            addListener: function() {}
+        }
     },
     storage: {
         sync: {
