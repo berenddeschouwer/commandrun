@@ -9,9 +9,11 @@ ALLOWED_COMMANDS := /usr/bin/false, /usr/bin/true
 PERMITTED_SITES := .localdomain, server
 DEBUG_FLAG := true
 
-EXT_SOURCE := background/background.in.js options/options.in.js
-EXT_RUN := $(patsubst %.in.js,%.js,$(EXT_SOURCE)) \
-           content/content.js
+EXT_SOURCE := background/background.in.js options/options.in.js \
+              content/content.in.js
+LIB_SOURCE := lib/shared.in.js
+EXT_RUN := $(patsubst %.in.js,%.js,$(EXT_SOURCE))
+LIB_RUN := $(patsubst %.in.js,%.js,$(LIB_SOURCE))
 EXT_FILES := options/options.html
 PY_SOURCE := commandrun.in.py
 PY_RUN := $(patsubst %.in.py,%.py,$(PY_SOURCE))
@@ -23,9 +25,9 @@ EXAMPLE_FILES := example/example.html example/example.js
 all: commandrun.zip
 
 commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
-	        $(EXT_RUN) $(PY_RUN) $(EXT_FILES)
+	        $(EXT_RUN) $(LIB_RUN) $(PY_RUN) $(EXT_FILES)
 	zip commandrun.zip $(DOC_FILES) $(EXAMPLE_FILES) $(META_FILES) \
-	    $(PY_RUN) $(EXT_RUN) $(EXT_FILES)
+	    $(PY_RUN) $(EXT_RUN) $(LIB_RUN) $(EXT_FILES)
 
 %.py: %.in.py
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
@@ -36,6 +38,7 @@ commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 %.js: %.in.js
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
 	    -e "s|@PERMITTED_SITES@|$(PERMITTED_SITES)|g" \
+	    -e "s|@DEBUG_FLAG@|$(DEBUG_FLAG)|g" \
 	    $< > $@
 
 %.json: %.in.json
@@ -59,6 +62,9 @@ check: all
 	        --jscomp_warning=lintChecks \
 	        --language_in ECMASCRIPT6_STRICT \
 	        --externs externs/externs.js \
-	        --js $(var) \
+	        --js $(LIB_RUN) $(var) \
 	    > /dev/null \
 	;)
+
+clean:
+	rm -- $(LIB_RUN) $(EXT_RUN)

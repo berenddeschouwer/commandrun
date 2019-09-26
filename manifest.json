@@ -23,12 +23,12 @@
         "page": "options/options.html"
     },
     "background": {
-        "scripts": ["background/background.js"]
+        "scripts": ["lib/shared.js", "background/background.js"]
     },
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
-            "js": ["content/content.js"]
+            "js": ["lib/shared.js", "content/content.js"]
         }
     ]
 }
