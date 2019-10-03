@@ -15,6 +15,10 @@ CommandRun with different defaults, try:
 ```make PREFIX=/usr ALLOWED_COMMANDS=/usr/bin/reboot
 ```
 
+= Requirements for Compilation =
+
+sed.  Basically sed is used as a precompiler for macro expansion.
+
 = Install =
 
 == User ==
