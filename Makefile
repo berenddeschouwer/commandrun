@@ -27,8 +27,15 @@ all: commandrun.zip
 
 commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	        $(EXT_RUN) $(LIB_RUN) $(PY_RUN) $(EXT_FILES) $(ICONS)
-	zip commandrun.zip $(DOC_FILES) $(EXAMPLE_FILES) $(META_FILES) \
+	zip commandrun.zip \
+            $(DOC_FILES) $(EXAMPLE_FILES) $(META_FILES) \
 	    $(PY_RUN) $(EXT_RUN) $(LIB_RUN) $(EXT_FILES) $(ICONS)
+
+dist: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) $(ICONS) \
+      $(EXT_SOURCE) $(LIB_SOURCE) $(PY_SOURCE) $(EXT_FILES)
+	zip commandrun-src.zip \
+            $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) $(ICONS) \
+            $(EXT_SOURCE) $(LIB_SOURCE) $(PY_SOURCE) $(EXT_FILES)
 
 %.py: %.in.py
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
