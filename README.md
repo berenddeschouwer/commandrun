@@ -19,6 +19,14 @@ CommandRun with different defaults, try:
 
 sed.  Basically sed is used as a precompiler for macro expansion.
 
+= Suggested (but not required) for Compilation =
+
+* pylint
+* closure-compiler
+
+These tools are used to do python and javascript checking, so they are
+suggested when modifying the source.  They are not required to build.
+
 = Install =
 
 == User ==
