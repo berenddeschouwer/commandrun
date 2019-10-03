@@ -8,7 +8,7 @@
     "applications": {
         "gecko": {
             "id": "commandrun@deschouwer.co.za",
-            "strict_min_version": "56.0"
+            "strict_min_version": "57.0"
         }
     },
     "permissions": [
