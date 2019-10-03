@@ -21,13 +21,14 @@ PY_RUN := $(patsubst %.in.py,%.py,$(PY_SOURCE))
 DOC_FILES := LICENSE README.md
 META_FILES := manifest.json native-messaging-hosts/commandrun.json
 EXAMPLE_FILES := example/example.html example/example.js
+ICONS := icons/commandrun-48.png icons/commandrun-96.png
 
 all: commandrun.zip
 
 commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
-	        $(EXT_RUN) $(LIB_RUN) $(PY_RUN) $(EXT_FILES)
+	        $(EXT_RUN) $(LIB_RUN) $(PY_RUN) $(EXT_FILES) $(ICONS)
 	zip commandrun.zip $(DOC_FILES) $(EXAMPLE_FILES) $(META_FILES) \
-	    $(PY_RUN) $(EXT_RUN) $(LIB_RUN) $(EXT_FILES)
+	    $(PY_RUN) $(EXT_RUN) $(LIB_RUN) $(EXT_FILES) $(ICONS)
 
 %.py: %.in.py
 	sed -e "s|@ALLOWED_COMMANDS@|$(ALLOWED_COMMANDS)|g" \
