@@ -7,7 +7,7 @@
     "description": "Allows running native commands.",
     "applications": {
         "gecko": {
-            "id": "commandrun@deschouwer.co.za",
+            "id": "commandrun@banapple.de",
             "strict_min_version": "57.0"
         }
     },
