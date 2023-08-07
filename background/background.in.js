@@ -284,7 +284,7 @@ Controller.prototype.prepare = function(pid) {
             }
             if (allowed_commands.includes(cmd) &&
                 permitted(url, permitted_sites)) {
-                 console.debug("allowed command, forwarding");
+                 console.debug(`CommandRun: allowed command, forwarding`);
                  var msg = {action:"run", what:message, handle:pid};
                  runner.postMessage(msg);
             } else {

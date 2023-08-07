@@ -25,7 +25,7 @@ var CommandRun = {
         function(command, output) {
             console_debug("sending a message");
             var p = browser.runtime.sendMessage(command);
-            console_debug("sent message, received promise:", p);
+            console_debug(`CommandRun.run(): sent message, received promise: ${p}`);
             p.then(
                 /**
                  *  @function

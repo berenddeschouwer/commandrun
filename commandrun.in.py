@@ -166,7 +166,7 @@ def main():
     logger.debug("changing directory")
     os.chdir("/")
     logger.debug("waiting for signals")
-    signal.signal(signal.SIGCHLD, wait_for_children)
+    #signal.signal(signal.SIGCHLD, wait_for_children)
     while True:
         logger.debug("loop started")
         message = get_message()
