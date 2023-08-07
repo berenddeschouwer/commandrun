@@ -289,7 +289,7 @@ Controller.prototype.prepare = function(pid) {
                  runner.postMessage(msg);
             } else {
                  console.debug("forbidden command");
-                 var response = {handle: pid, errno: -1, stdout: "", stderr: "forbidden command"};
+                 var response = {handle: pid, errno: -2, stdout: "", stderr: "forbidden command"};
                  responder(response);
             }
         }
