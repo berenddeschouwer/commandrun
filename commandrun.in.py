@@ -187,12 +187,10 @@ def main():
                 myhandle = handle
                 stufftorun = message["what"]
                 logger.debug("stufftorun: %s", str(stufftorun))
-                running = subprocess.Popen(stufftorun,
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE)
-                running.wait()
+                running = subprocess.run(stufftorun,
+                                         capture_output = True)
                 logger.debug("sending done\n")
-                send_response(myhandle, running.returncode, running.stdout.read())
+                send_response(myhandle, running.returncode, running.stdout, running.stderr)
                 #  Close this process, but don't quit the main program.
                 os._exit(0) # pylint: disable=protected-access
         else:
