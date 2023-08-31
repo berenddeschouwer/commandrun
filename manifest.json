@@ -3,7 +3,7 @@
     "name": "commandrun",
     "author": "Berend De Schouwer",
     "homepage_url": "https://github.com/berenddeschouwer/commandrun",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Allows running native commands.",
     "applications": {
         "gecko": {

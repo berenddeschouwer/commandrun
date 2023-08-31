@@ -23,7 +23,10 @@ META_FILES := manifest.json native-messaging-hosts/commandrun.json
 EXAMPLE_FILES := example/example.html example/example.js
 ICONS := icons/commandrun-48.png icons/commandrun-96.png
 
-all: commandrun.zip
+all: commandrun.zip commandrun.xpi
+
+commandrun.xpi: commandrun.zip
+	cp commandrun.zip commandrun.xpi
 
 commandrun.zip: $(DOC_FILES) $(META_FILES) $(EXAMPLE_FILES) \
 	        $(EXT_RUN) $(LIB_RUN) $(PY_RUN) $(EXT_FILES) $(ICONS)
