@@ -262,25 +262,40 @@ Controller.prototype.prepare = function(pid) {
          *  @function
          *  @param {Object} result
          */
-        var checker = function(result) {
+        var checker = function(result, policies) {
             /** @type {Array.<string>} */
             var allowed_commands;
             /** @type {Array.<string>} */
             var permitted_sites;
             /*var command = cmd;*/
-            if (result.allowed_commands) {
-                console.debug("background/saved commands:", result.allowed_commands);
-                allowed_commands = result.allowed_commands;
-            } else {
-                console.debug("background/no allowed commands set");
-                allowed_commands = ["@ALLOWED_COMMANDS@"];
+            if (result) {
+                if (result.allowed_commands) {
+                     console.debug("background/saved commands:", result.allowed_commands);
+                     allowed_commands = result.allowed_commands;
+                } else {
+                    console.debug("background/no allowed commands set");
+                    allowed_commands = ["@ALLOWED_COMMANDS@"];
+                }
+                if (result.permitted_sites) {
+                    console.debug("background/permitted sites:", result.permitted_sites);
+                    permitted_sites = result.permitted_sites;
+                } else {
+                    console.debug("background/no permitted set");
+                    permitted_sites = ["@PERMITTED_SITES@"];
+                }
             }
-            if (result.permitted_sites) {
-                console.debug("background/permitted sites:", result.permitted_sites);
-                permitted_sites = result.permitted_sites;
-            } else {
-                console.debug("background/no permitted set");
-                permitted_sites = ["@PERMITTED_SITES@"];
+            /**
+             *  If the administrator set policies, override the user preferences
+             */
+            if (policies) {
+                if (policies.allowed_commands) {
+                    console.debug("Policy overwrites allowed commands:", policies.allowed_commands);
+                    allowed_commands = policies.allowed_commands;
+                }
+                if (policies.permitted_sites) {
+                    console.debug("Policy overwrites permitted sites:", policies.permitted_sites);
+                    permitted_sites = policies.permitted_sites;
+                }
             }
             if (allowed_commands.includes(cmd) &&
                 permitted(url, permitted_sites)) {
@@ -299,8 +314,20 @@ Controller.prototype.prepare = function(pid) {
     var processor = checkAndRun(this,pid);
     console.debug("Controller.prepare():", processor);
     var getting = browser.storage.sync.get(["allowed_commands", "permitted_sites"]);
+    var policies = browser.storage.managed.get(["allowed_commands", "permitted_sites"]);
     console.debug("Controller.prepare(): chainging promise");
-    getting.then(processor, onError); 
+    Promise.all([
+        getting.catch(
+            (error) => onError(error)
+        ),
+        policies.catch(
+            (error) => onError(error)
+        )
+    ]).then(
+	(values) => {
+            processor(values[0], values[1]);
+	}
+    );
 }
 
 

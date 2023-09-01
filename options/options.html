@@ -7,7 +7,12 @@
   <body>
     <form>
         <p>
-        <bold>Permitted Sites</bold>
+	<div id="policies_active" style="display: none";>
+	  <hr>
+	  <em><b>The administrator has set policies.  No changes are applied.</b></em>
+	  <hr>
+	</div>
+        <b>Permitted Sites</b>
         Which sites are permitted to run commands.  You can specify
         specific hosts, eg. <em>localhost.localdomain,</em> or domains, eg.
         <em>.example.com.</em>  A list of sites can be specified.
@@ -15,7 +20,7 @@
         <input type="text" id="permitted_sites" >
         <hr>
         <p>
-        <bold>Allowed Commands</bold>
+        <b>Allowed Commands</b>
         What commands are allowed to run.  A list of commands can be
         specified.  <em>Important:</em> Sites will be able to add options
         to the commands, so if you allow <em>/usr/bin/ls</em>, sites can

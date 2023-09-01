@@ -69,6 +69,16 @@ function restoreOptions() {
         document.querySelector("#permitted_sites").value = permitted_sites;
     }
 
+    /*
+     *  Toggle a warning that policies have been set.
+     */
+    function setPolicy(result) {
+        if (result.allowed_commands || result.permitted_sites) {
+	    console.debug("policies are set, so inform the user");
+	    document.querySelector("#policies_active").style.display = "block";
+        }
+    }
+
     /**
      * Act on Errors to the browser storage.  Does nothing.
      */
@@ -76,11 +86,21 @@ function restoreOptions() {
         console.warn(`Error: ${error}`);
     }
 
+    /*
+     *  Load preferences
+     */
     var commands = browser.storage.sync.get("allowed_commands");
     commands.then(setCurrentCommands, onError);
-
     var sites = browser.storage.sync.get("permitted_sites");
     sites.then(setCurrentSites, onError);
+
+    /*
+     *  Load policies
+     */
+    var policy_commands = browser.storage.managed.get("allowed_commands");
+    policy_commands.then(setPolicy, onError);
+    var policy_sites = browser.storage.managed.get("permitted_sites");
+    policy_sites.then(setPolicy, onError);
 }
 
 
