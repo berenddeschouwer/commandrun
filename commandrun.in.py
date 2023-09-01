@@ -188,7 +188,8 @@ def main():
                 stufftorun = message["what"]
                 logger.debug("stufftorun: %s", str(stufftorun))
                 running = subprocess.run(stufftorun,
-                                         capture_output = True)
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
                 logger.debug("sending done\n")
                 send_response(myhandle, running.returncode, running.stdout, running.stderr)
                 #  Close this process, but don't quit the main program.
