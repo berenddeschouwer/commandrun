@@ -8,6 +8,35 @@ commands may include reboot, or start a flash drive.
 
 The list of websites and commands are configurable.
 
+= Configuration =
+
+== User Preferences ==
+
+The user can override the default list using normal extension
+preferences in about:addons.
+
+Set the allowed sites, and the allowed commands.
+
+== Administrator Policies ==
+
+The administrator can override the policies in policies.json
+
+```
+{
+    "policies": {
+        "3rdparty": {
+            "Extensions": {
+                "commandrun@banapple.de": {
+                    "allowed_commands": [ "/usr/bin/maybe" ],
+                    "permitted_sites": [ "example.net", "example.com" ]
+                }
+            }
+        }
+    }
+}
+```
+
+
 = Build =
 
 You can build CommandRun from this source by running 'make all'.  To build
